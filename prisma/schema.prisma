@@ -1,0 +1,486 @@
+// Prisma şema dosyası
+// Bu şema, villa kiralama sistemi için veritabanı yapısını tanımlar
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==================== ENUM TANIMLARI ====================
+
+/// Villa durumunu belirten enum
+/// @default ACTIVE - Yeni villalar varsayılan olarak aktif durumda oluşturulur
+enum VillaStatus {
+  ACTIVE    // Villa aktif ve kiralanabilir durumda
+  INACTIVE  // Villa geçici olarak kiralamaya kapalı
+}
+
+/// Rezervasyon durumunu belirten enum
+/// Rezervasyon sürecindeki tüm olası durumları kapsar
+enum ReservationStatus {
+  PENDING       // Ön rezervasyon - Onay bekliyor
+  CONFIRMED     // Onaylandı - Rezervasyon kesinleşti
+  CANCELLED     // İptal edildi - Rezervasyon iptal edildi
+  COMPLETED     // Tamamlandı - Konaklama süreci bitti
+}
+
+/// Takvim durumlarını belirten enum
+/// Villa müsaitlik durumunu gösterir
+enum CalendarStatus {
+  AVAILABLE     // Müsait - Kiralanabilir durumda
+  RESERVED      // Rezerve - Rezervasyon yapılmış
+  BLOCKED       // Kapalı - Bakım, tadilat vb. sebeplerle kapalı
+  PENDING       // Ön rezervasyon - Geçici olarak rezerve edilmiş
+}
+
+/// Ödeme tipini belirten enum
+/// Rezervasyon ödemesinin nasıl yapılacağını belirtir
+enum PaymentType {
+  FULL_PAYMENT  // Tam ödeme - Toplam tutarın tamamı tek seferde ödenir
+  SPLIT_PAYMENT // Taksitli ödeme - Ödeme iki veya daha fazla taksitte yapılır
+}
+
+/// Kullanıcı rollerini belirten enum
+enum UserRole {
+  CUSTOMER  // Normal müşteri rolü
+  ADMIN     // Yönetici rolü
+}
+
+/// Kullanıcı durumunu belirten enum
+enum UserStatus {
+  ACTIVE    // Aktif kullanıcı
+  INACTIVE  // Pasif kullanıcı
+  BANNED    // Yasaklanmış kullanıcı
+}
+
+// ==================== ANA MODELLER ====================
+
+/// Bölge modeli
+/// Villaların bulunduğu bölgeleri ve alt bölgeleri tanımlar
+model Region {
+  id           String            @id @default(cuid())    // Benzersiz bölge tanımlayıcısı
+  name         String            @unique                 // Bölge adı (benzersiz olmalı)
+  isMainRegion Boolean           @default(false)        // Ana bölge mi? (örn: Antalya)
+  parentId     String?                                  // Üst bölge ID'si (alt bölgeler için)
+  description  String?                                  // Bölge açıklaması
+  createdAt    DateTime          @default(now())        // Oluşturulma tarihi
+  updatedAt    DateTime          @updatedAt             // Son güncelleme tarihi
+  imageUrl     String?                                  // Bölge görseli
+  isPromoted   Boolean           @default(false)        // Öne çıkarılan bölge mi?
+  slug         String?                                  // SEO dostu URL
+  villaCount   Int?              @default(0)           // Bölgedeki villa sayısı
+  isActive     Boolean           @default(true)         // Bölge aktif mi?
+  
+  // SEO ve Meta Bilgileri
+  metaTitle    String?                                  // SEO başlığı
+  metaDesc     String?                                  // SEO açıklaması
+
+  // İlişkiler
+  parent       Region?           @relation("RegionToRegion", fields: [parentId], references: [id])  // Üst bölge ilişkisi
+  children     Region[]          @relation("RegionToRegion")                                        // Alt bölge ilişkileri
+  villas       Villa[]           @relation("MainRegionToVilla")                                     // Ana bölgedeki villalar
+  subVillas    Villa[]           @relation("SubRegionToVilla")                                     // Alt bölgedeki villalar
+  seoMetadata  SeoMetadata?                                                                        // SEO meta verileri
+
+  @@index([parentId, isMainRegion])
+  @@index([isMainRegion])
+  @@index([isPromoted])
+  @@index([slug])
+  @@index([isActive])
+}
+
+/// Villa modeli
+/// Sistemdeki tüm villa bilgilerini ve özelliklerini içerir
+model Villa {
+  // Temel Kimlik Bilgileri
+  id              String    @id @default(cuid())    // Benzersiz villa tanımlayıcısı
+  title           String                            // Villa başlığı/adı
+  description     String    @db.Text               // Villa detaylı açıklaması (uzun metin)
+  slug            String    @unique                 // SEO dostu URL yapısı
+
+  // Bölge Bilgileri (Zorunlu)
+  mainRegion      String                           // Ana bölge adı (örn: Antalya)
+  subRegion       String                           // Alt bölge adı (örn: Kalkan)
+  regionId        String                           // Ana bölge ID referansı
+  subRegionId     String                           // Alt bölge ID referansı
+  region          Region    @relation("MainRegionToVilla", fields: [regionId], references: [id])
+  subRegionRel    Region    @relation("SubRegionToVilla", fields: [subRegionId], references: [id])
+
+  // Fiyatlandırma ve Ödeme Bilgileri
+  deposit         Decimal  @db.Decimal(10,2)    // Sabit depozito ücreti
+  cleaningFee     Decimal? @db.Decimal(10,2)    // Opsiyonel temizlik ücreti
+  shortStayDayLimit Int?                           // Kısa konaklama için gün limiti
+
+  // Kapasite ve Fiziksel Özellikler
+  bedrooms        Int                              // Yatak odası sayısı
+  bathrooms       Int                              // Banyo sayısı
+  maxGuests       Int                              // Maksimum misafir kapasitesi
+  
+  // Konaklama Kuralları ve Politikalar
+  checkInTime     String    @default("16:00")      // Giriş saati
+  checkOutTime    String    @default("10:00")      // Çıkış saati
+  minimumStay     Int       @default(3)            // Minimum konaklama süresi
+  rules           String[]                         // Villa kuralları (çoklu dil desteği)
+  
+  // Özellikler ve Etiketler
+  tags            String[]                         // Arama ve filtreleme etiketleri
+  embedCode       String?                          // Harita veya sanal tur kodu
+
+  // Durum ve Promosyon
+  status          VillaStatus @default(ACTIVE)     // Villa durumu
+  isPromoted      Boolean    @default(false)       // Öne çıkarma durumu
+  
+  // Zaman Bilgileri
+  createdAt       DateTime  @default(now())        // Kayıt oluşturma tarihi
+  updatedAt       DateTime  @updatedAt             // Son güncelleme tarihi
+
+  // Rezervasyon ve Ödeme Politikaları
+  advancePaymentRate  Decimal  @db.Decimal(5,2) @default(20)       // Ön ödeme yüzdesi
+  
+  // Özel Notlar ve Kurallar
+  checkInNotes    String?     @db.Text            // Giriş prosedürü notları
+  checkOutNotes   String?     @db.Text            // Çıkış prosedürü notları
+  houseRules      String[]                        // Detaylı ev kuralları
+  cancellationNotes String?   @db.Text            // İptal politikası detayları
+  
+  // İlişkiler
+  seasonalPrices  SeasonalPrice[]                 // Sezonluk fiyatlandırmalar
+  calendar        CalendarEvent[]                 // Takvim kayıtları
+  reservations    Reservation[]                   // Rezervasyonlar
+  reviews         Review[]                        // Değerlendirmeler
+  villaAmenities  VillaAmenity[]                 // Villa özellikleri
+  images          VillaImage[]                    // Villa görselleri
+  villaTags       VillaTag[]                     // Özel etiketler
+  seoMetadata     SeoMetadata?                   // SEO bilgileri
+  formSubmissions FormSubmission[]               // Form gönderileri
+  translations    Json?                           // Çoklu dil desteği için
+  favoredBy       User[]    @relation("UserFavorites")    // Villayı favorileyen kullanıcılar
+  
+  // Veritabanı İndeksleri
+  @@index([status, isPromoted])                  // Durum ve promosyon aramaları için
+  @@index([regionId, subRegionId])               // Bölge bazlı sorgular için
+  @@index([bedrooms, bathrooms, maxGuests])      // Kapasite aramaları için
+  @@index([slug])                                // URL yönlendirmeleri için
+  @@index([title])                                 // Başlık aramaları için
+  @@index([createdAt])                             // Yeni villalar listesi için
+  @@index([minimumStay])                             // Minimum konaklama süresi filtrelemesi için
+}
+
+/// Para Birimi modeli
+/// Sistem genelinde kullanılan para birimlerini ve kur bilgilerini yönetir
+/// TBMM API ile otomatik güncellenir
+model Currency {
+  id              String   @id @default(cuid())   // Benzersiz para birimi tanımlayıcısı
+  code            String   @unique                // Para birimi kodu (örn: TRY, USD, EUR)
+  name            String                          // Para birimi adı
+  symbol          String                          // Para birimi sembolü
+  exchangeRate    Decimal  @db.Decimal(10,2)    // Döviz kuru
+  isDefault       Boolean  @default(false)        // Varsayılan para birimi mi?
+  isActive        Boolean  @default(true)         // Aktif kullanımda mı?
+  lastUpdated     DateTime @default(now())        // Son kur güncelleme tarihi
+  lastUpdateStatus String? @default("success")    // Son güncelleme durumu
+  lastUpdateError String?                         // Son güncelleme hatası
+  autoUpdate      Boolean @default(true)          // Otomatik güncelleme aktif mi?
+  updateInterval  Int     @default(60)            // Güncelleme aralığı (dakika)
+  lastUpdateIp    String?   // Son güncellemeyi yapan IP
+  updateSource    String    @default("SYSTEM")  // Güncelleme kaynağı
+
+  // İlişkiler
+  seasonalPrices  SeasonalPrice[]                // Sezonluk fiyatlar
+  reservations    Reservation[]                   // Rezervasyonlar
+  priceDetails    ReservationPriceDetail[]       // Rezervasyon fiyat detayları
+  updateHistory   CurrencyUpdateLog[]            // Güncelleme geçmişi
+
+  @@index([isActive])
+  @@index([code])
+  @@index([autoUpdate])
+}
+
+/// Döviz Kuru Güncelleme Geçmişi
+/// Para birimi güncelleme işlemlerinin loglarını tutar
+model CurrencyUpdateLog {
+  id            String   @id @default(cuid())    // Benzersiz log tanımlayıcısı
+  currencyId    String                           // İlişkili para birimi
+  oldRate       Decimal                            // Eski kur değeri
+  newRate       Decimal                            // Yeni kur değeri
+  updateStatus  String                           // Güncelleme durumu
+  errorMessage  String?                          // Hata mesajı (varsa)
+  source        String   @default("TCMB")        // Veri kaynağı
+  createdAt     DateTime @default(now())         // Kayıt tarihi
+
+  // İlişkiler
+  currency      Currency @relation(fields: [currencyId], references: [id])
+
+  @@index([currencyId])
+  @@index([updateStatus])
+  @@index([createdAt])
+}
+
+/// Sezonluk Fiyat modeli
+/// Villaların farklı sezonlardaki fiyatlandırma bilgilerini tutar
+model SeasonalPrice {
+  id           String   @id @default(cuid())   // Benzersiz fiyat tanımlayıcısı
+  villaId      String                          // İlişkili villa ID'si
+  seasonName   String                          // Sezon adı (örn: "Yaz 2024")
+  startDate    DateTime                        // Sezon başlangıç tarihi
+  endDate      DateTime                        // Sezon bitiş tarihi
+  nightlyPrice Decimal  @db.Decimal(10,2)    // Gecelik fiyat
+  weeklyPrice  Decimal? @db.Decimal(10,2)    // Haftalık fiyat (opsiyonel indirimli)
+  currencyId   String                         // Para birimi ID'si
+  description  String?                        // Sezon açıklaması
+  isActive     Boolean  @default(true)        // Fiyatlandırma aktif mi?
+  
+  // İlişkiler
+  villa        Villa    @relation(fields: [villaId], references: [id], onDelete: Cascade)
+  currency     Currency @relation(fields: [currencyId], references: [id])
+
+  @@unique([villaId, startDate, endDate])     // Aynı tarih aralığında mükerrer kayıt olmamalı
+  @@index([startDate, endDate])               // Tarih bazlı sorgular için
+  @@index([isActive])                         // Aktif fiyat sorguları için
+}
+
+/// Rezervasyon Fiyat Detayları
+/// Her rezervasyonun günlük fiyat detaylarını tutar
+model ReservationPriceDetail {
+  id            String     @id @default(cuid())  // Benzersiz detay tanımlayıcısı
+  reservationId String                          // İlişkili rezervasyon ID'si
+  date          DateTime                        // Fiyatın geçerli olduğu tarih
+  price         Decimal  @db.Decimal(10,2)    // O güne ait fiyat
+  currencyId    String                         // Para birimi ID'si
+  exchangeRate  Decimal  @db.Decimal(10,2)    // Rezervasyon anındaki kur değeri
+  
+  // İlişkiler
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  currency      Currency    @relation(fields: [currencyId], references: [id])
+
+  @@index([reservationId])                     // Rezervasyon bazlı sorgular için
+  @@index([date])                              // Tarih bazlı sorgular için
+}
+
+/// Rezervasyon modeli
+/// Sistemdeki tüm rezervasyon kayıtlarını ve detaylarını tutar
+model Reservation {
+  id                String            @id @default(cuid())  // Benzersiz rezervasyon tanımlayıcısı
+  bookingRef        String            @unique              // Benzersiz rezervasyon referans kodu
+  villaId           String                                // İlişkili villa ID'si
+  currencyId        String                                // Para birimi ID'si
+  
+  // Tarih ve Kapasite Bilgileri
+  startDate         DateTime                              // Konaklama başlangıç tarihi
+  endDate           DateTime                              // Konaklama bitiş tarihi
+  guestCount        Int                                   // Misafir sayısı
+  
+  // Ödeme Detayları
+  totalAmount       Decimal    @db.Decimal(10,2)  // Daha hassas para birimi kontrolü
+  advanceAmount     Decimal    @db.Decimal(10,2)
+  remainingAmount   Decimal    @db.Decimal(10,2)
+  paymentType       PaymentType       @default(SPLIT_PAYMENT) // Ödeme tipi
+  paymentDueDate    DateTime                              // Son ödeme tarihi
+  
+  // Durum Bilgileri
+  status            ReservationStatus @default(PENDING)    // Rezervasyon durumu
+  cancellationReason String?                              // İptal nedeni (varsa)
+  
+  // Müşteri Bilgileri
+  customerName      String                                // Müşteri adı soyadı
+  customerEmail     String                                // İletişim e-postası
+  customerPhone     String                                // İletişim telefonu
+  customerNotes     String?           @db.Text            // Özel notlar
+  
+  // İlişkiler
+  villa            Villa             @relation(fields: [villaId], references: [id])
+  currency         Currency          @relation(fields: [currencyId], references: [id])
+  calendar         CalendarEvent[]                        // Takvim kayıtları
+  priceDetails     ReservationPriceDetail[]              // Fiyat detayları
+  userId          String                          // Rezervasyonu yapan kullanıcı ID'si
+  user          User     @relation(fields: [userId], references: [id])  // Kullanıcı ilişkisi
+  
+  // Zaman Bilgileri
+  createdAt        DateTime          @default(now())      // Oluşturulma tarihi
+  updatedAt        DateTime          @updatedAt           // Son güncelleme tarihi
+  cancelledAt      DateTime?                              // İptal tarihi
+
+  @@index([villaId, status])                             // Villa ve durum bazlı sorgular
+  @@index([startDate, endDate])                          // Tarih bazlı sorgular
+  @@index([bookingRef])                                  // Referans kodu aramaları
+  @@index([currencyId])                                  // Para birimi bazlı sorgular
+  @@index([customerEmail])  // Müşteri aramaları için
+  @@index([userId])                            // Kullanıcı bazlı sorgular için
+}
+
+/// Villa Görselleri modeli
+/// Villa ile ilişkili tüm görselleri ve detaylarını tutar
+model VillaImage {
+  id           String   @id @default(cuid())   // Benzersiz görsel tanımlayıcısı
+  villaId      String                          // İlişkili villa ID'si
+  imageUrl     String                          // Görsel URL'i
+  title        String?                         // Görsel başlığı
+  altText      String?                         // Alternatif metin (SEO için)
+  order        Int      @default(0)            // Görsel sıralaması
+  isCoverImage Boolean  @default(false)        // Kapak görseli mi?
+  createdAt    DateTime @default(now())        // Oluşturulma tarihi
+  
+  villa        Villa    @relation(fields: [villaId], references: [id], onDelete: Cascade)
+
+  @@index([villaId])                          // Villa bazlı sorgular için
+  @@index([isCoverImage])                     // Kapak görseli sorguları için
+}
+
+/// Villa Özellikleri modeli
+/// Villanın sahip olduğu özellikleri (havuz, jakuzi vb.) tutar
+model VillaAmenity {
+  id        String   @id @default(cuid())      // Benzersiz özellik tanımlayıcısı
+  villaId   String                             // İlişkili villa ID'si
+  name      String                             // Özellik adı
+  icon      String?                            // Özellik ikonu
+  createdAt DateTime @default(now())           // Oluşturulma tarihi
+  
+  villa     Villa    @relation(fields: [villaId], references: [id], onDelete: Cascade)
+
+  @@index([villaId])                          // Villa bazlı sorgular için
+}
+
+/// Villa Etiketleri modeli
+/// Villa ile ilişkili özel etiketleri tutar
+model VillaTag {
+  id        String   @id @default(cuid())      // Benzersiz etiket tanımlayıcısı
+  villaId   String                             // İlişkili villa ID'si
+  name      String                             // Etiket adı
+  createdAt DateTime @default(now())           // Oluşturulma tarihi
+  
+  villa     Villa    @relation(fields: [villaId], references: [id], onDelete: Cascade)
+
+  @@index([villaId])                          // Villa bazlı sorgular için
+}
+
+/// Değerlendirme modeli
+/// Villa için yapılan müşteri değerlendirmelerini tutar
+model Review {
+  id            String    @id @default(cuid())  // Benzersiz değerlendirme tanımlayıcısı
+  villaId       String                          // İlişkili villa ID'si
+  rating        Int                             // Puanlama (1-5)
+  comment       String?                         // Değerlendirme metni
+  isApproved    Boolean   @default(false)       // Onay durumu
+  createdAt     DateTime  @default(now())       // Oluşturulma tarihi
+  userId        String                           // Değerlendirmeyi yapan kullanıcı ID'si
+  user          User     @relation(fields: [userId], references: [id])  // Kullanıcı ilişkisi
+  
+  villa         Villa     @relation(fields: [villaId], references: [id], onDelete: Cascade)
+
+  @@index([villaId])                           // Villa bazlı sorgular için
+  @@index([rating])                            // Puan bazlı sorgular için
+  @@index([isApproved])    // Onay durumu sorguları için
+  @@index([userId])                             // Kullanıcı bazlı sorgular için
+}
+
+/// Form Gönderimi modeli
+/// Villa ile ilgili form gönderimlerini tutar
+model FormSubmission {
+  id        String   @id @default(cuid())       // Benzersiz form tanımlayıcısı
+  villaId   String                              // İlişkili villa ID'si
+  formData  Json                                // Form verileri (esnek yapı)
+  createdAt DateTime @default(now())            // Oluşturulma tarihi
+  
+  villa     Villa    @relation(fields: [villaId], references: [id], onDelete: Cascade)
+
+  @@index([villaId])                           // Villa bazlı sorgular için
+}
+
+/// SEO Meta Verileri modeli
+/// Villa ve bölgeler için SEO meta verilerini tutar
+model SeoMetadata {
+  id          String  @id @default(cuid())      // Benzersiz meta veri tanımlayıcısı
+  villaId     String? @unique                   // İlişkili villa ID'si (opsiyonel)
+  regionId    String? @unique                   // İlişkili bölge ID'si (opsiyonel)
+  title       String                            // SEO başlığı
+  description String                            // SEO açıklaması
+  keywords    String?                           // Anahtar kelimeler
+  
+  villa       Villa?  @relation(fields: [villaId], references: [id], onDelete: Cascade)
+  region      Region? @relation(fields: [regionId], references: [id], onDelete: Cascade)
+}
+
+/// Takvim Etkinlikleri modeli
+/// Villa müsaitlik durumunu ve rezervasyon tarihlerini tutar
+model CalendarEvent {
+  id            String         @id @default(cuid())  // Benzersiz etkinlik tanımlayıcısı
+  villaId       String                              // İlişkili villa ID'si
+  reservationId String?                             // İlişkili rezervasyon ID'si (opsiyonel)
+  date          DateTime                            // Etkinlik tarihi
+  status        CalendarStatus @default(AVAILABLE)   // Müsaitlik durumu
+  price         Decimal?  @db.Decimal(10,2)    // Özel fiyat (varsa)
+  note          String?                             // Özel not
+  
+  // İlişkiler
+  villa         Villa         @relation(fields: [villaId], references: [id], onDelete: Cascade)
+  reservation   Reservation?  @relation(fields: [reservationId], references: [id])
+
+  @@unique([villaId, date])                        // Aynı tarihte mükerrer kayıt olmamalı
+  @@index([villaId])                               // Villa bazlı sorgular için
+  @@index([date])                                  // Tarih bazlı sorgular için
+  @@index([status])                                // Durum bazlı sorgular için
+}
+
+/// Kullanıcı modeli
+/// Sistemdeki tüm kullanıcıları ve rollerini tanımlar
+model User {
+  id            String      @id @default(cuid())    // Benzersiz kullanıcı tanımlayıcısı
+  email         String      @unique                 // Benzersiz e-posta adresi
+  password      String                              // Şifrelenmiş parola
+  name          String?                             // Kullanıcı adı
+  role          UserRole    @default(CUSTOMER)      // Kullanıcı rolü
+  status        UserStatus  @default(ACTIVE)        // Kullanıcı durumu
+  phone         String?                             // Telefon numarası
+  avatar        String?                             // Profil fotoğrafı URL'i
+  
+  // İletişim ve Adres Bilgileri
+  address       String?     @db.Text               // Açık adres
+  city          String?                            // Şehir
+  country       String?                            // Ülke
+  postalCode    String?                            // Posta kodu
+
+  // Hesap Bilgileri
+  emailVerified DateTime?                          // E-posta doğrulama tarihi
+  lastLogin     DateTime?                          // Son giriş tarihi
+  createdAt     DateTime    @default(now())        // Hesap oluşturma tarihi
+  updatedAt     DateTime    @updatedAt             // Son güncelleme tarihi
+  
+  // Güvenlik ve Tercihler
+  twoFactorEnabled Boolean  @default(false)        // İki faktörlü doğrulama aktif mi?
+  notificationPrefs Json?                          // Bildirim tercihleri
+
+  // İlişkiler
+  reservations  Reservation[]                      // Kullanıcının rezervasyonları
+  reviews       Review[]                           // Kullanıcının değerlendirmeleri
+  favorites     Villa[]     @relation("UserFavorites") // Favori villalar
+
+  // Yönetici İlişkileri (Sadece ADMIN rolü için)
+  activityLogs  AdminActivityLog[]                     // Yönetici aktivite logları
+
+  @@index([email])                                // E-posta aramaları için
+  @@index([role])                                 // Rol bazlı sorgular için
+  @@index([status])                               // Durum bazlı sorgular için
+  @@index([createdAt])                            // Tarih bazlı sorgular için
+}
+
+/// Yönetici Aktivite Logları
+/// Admin kullanıcıların sistem üzerindeki işlemlerini kaydeder
+model AdminActivityLog {
+  id          String    @id @default(cuid())     // Benzersiz log tanımlayıcısı
+  userId      String                             // İşlemi yapan admin ID'si
+  action      String                             // Yapılan işlem
+  details     Json                               // İşlem detayları
+  ipAddress   String?                            // İşlemin yapıldığı IP
+  createdAt   DateTime  @default(now())          // İşlem tarihi
+
+  // İlişkiler
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}

@@ -1,0 +1,167 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-nunito);
+  --font-heading: var(--font-montserrat);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  /* Inn Elegance renk paleti - Marka kılavuzuna göre düzenlendi */
+  --background: #ffffff; /* Beyaz - Arkaplan rengi */
+  --foreground: #000000; /* Siyah - Ana metin rengi */
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #180675; /* Mor - Başlık rengi */
+  --primary-foreground: #ffffff;
+  --secondary: #100049; /* Koyu Lacivert - Vurgu rengi */
+  --secondary-foreground: #ffffff;
+  --muted: #f5f5f5;
+  --muted-foreground: #6b7280;
+  --accent: #180675; /* Mor */
+  --accent-foreground: #ffffff;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #100049; /* Koyu Lacivert */
+  --chart-1: #180675; /* Mor */
+  --chart-2: #100049; /* Koyu Lacivert */
+  --chart-3: #ffffff; /* Beyaz */
+  --chart-4: #000000; /* Siyah */
+  --chart-5: #666666;
+  --sidebar: #100049; /* Koyu Lacivert */
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #180675; /* Mor */
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffffff; /* Beyaz */
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: rgba(255, 255, 255, 0.3);
+}
+
+.dark {
+  --background: #100049; /* Koyu Lacivert */
+  --foreground: #ffffff;
+  --card: #180675; /* Mor */
+  --card-foreground: #ffffff;
+  --popover: #180675; /* Mor */
+  --popover-foreground: #ffffff;
+  --primary: #ffffff; /* Beyaz */
+  --primary-foreground: #000000;
+  --secondary: #333333;
+  --secondary-foreground: #ffffff;
+  --muted: #333333;
+  --muted-foreground: #a3a3a3;
+  --accent: #333333;
+  --accent-foreground: #ffffff;
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: rgba(255, 255, 255, 0.5);
+  --chart-1: #ffffff; /* Beyaz */
+  --chart-2: #cccccc;
+  --chart-3: #ffffff;
+  --chart-4: #180675; /* Mor */
+  --chart-5: #100049; /* Koyu Lacivert */
+  --sidebar: #180675; /* Mor */
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ffffff; /* Beyaz */
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #333333;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: rgba(255, 255, 255, 0.5);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold text-primary;
+  }
+  h1 {
+    @apply text-4xl md:text-5xl font-bold; /* 32px-48px için */
+  }
+  h2 {
+    @apply text-3xl md:text-4xl font-semibold; /* 24px-28px için */
+  }
+  h3 {
+    @apply text-2xl md:text-3xl font-semibold; /* 24px-28px için */
+  }
+  p {
+    @apply font-sans text-base; /* 16px-18px için */
+  }
+  span, div, li {
+    @apply font-sans;
+  }
+  a {
+    @apply text-primary hover:text-primary/90 transition-colors duration-300;
+  }
+  button, .btn {
+    @apply font-sans font-medium; /* Medium (500) - butonlar için */
+  }
+  .text-secondary {
+    @apply text-sm font-light; /* Light (300) - ikincil metinler için */
+  }
+}
+
+/* Marka değerlerini yansıtan özel bileşen stilleri */
+.card-elegant {
+  @apply bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300;
+}
+
+.btn-primary-elegant {
+  @apply bg-primary text-white hover:bg-primary/80 transition-colors duration-300;
+}
+
+.btn-secondary-elegant {
+  @apply bg-secondary text-white hover:bg-secondary/80 transition-colors duration-300;
+}
+
+.input-elegant {
+  @apply border-input focus:border-primary focus:ring-1 focus:ring-primary transition-colors duration-300;
+}
