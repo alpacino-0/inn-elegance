@@ -1,37 +1,70 @@
 import { forgotPasswordAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
+import { FormMessage } from "@/components/form-message";
+import type { Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { SmtpMessage } from "../smtp-message";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function ForgotPassword(props: {
   searchParams: Promise<Message>;
 }) {
   const searchParams = await props.searchParams;
+  
+  if ("message" in searchParams) {
+    return (
+      <div className="w-full flex-1 flex items-center h-screen sm:max-w-md justify-center gap-2 p-4">
+        <FormMessage message={searchParams} />
+      </div>
+    );
+  }
+  
   return (
-    <>
-      <form className="flex-1 flex flex-col w-full gap-2 text-foreground [&>input]:mb-6 min-w-64 max-w-64 mx-auto">
-        <div>
-          <h1 className="text-2xl font-medium">Reset Password</h1>
-          <p className="text-sm text-secondary-foreground">
-            Already have an account?{" "}
-            <Link className="text-primary underline" href="/sign-in">
-              Sign in
+    <div className="container max-w-md mx-auto py-10 px-4">
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center font-montserrat">Şifre Sıfırlama</CardTitle>
+          <CardDescription className="text-center font-nunito">
+            Şifrenizi sıfırlamak için e-posta adresinizi girin
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <form className="flex flex-col space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="font-nunito font-medium">E-posta</Label>
+              <Input 
+                id="email"
+                name="email" 
+                type="email"
+                placeholder="email@example.com" 
+                autoComplete="email"
+                required 
+                className="w-full"
+              />
+              <p className="text-xs text-muted-foreground font-nunito">
+                Şifre sıfırlama bağlantısı bu adrese gönderilecektir
+              </p>
+            </div>
+            <SubmitButton 
+              formAction={forgotPasswordAction} 
+              pendingText="Gönderiliyor..."
+              className="w-full bg-primary hover:bg-primary/90 text-white font-medium font-nunito mt-2"
+            >
+              Şifremi Sıfırla
+            </SubmitButton>
+            <FormMessage message={searchParams} />
+          </form>
+        </CardContent>
+        <CardFooter className="flex flex-col border-t">
+          <p className="text-sm text-muted-foreground font-nunito">
+            Şifrenizi hatırladınız mı?{" "}
+            <Link className="text-primary font-medium hover:underline" href="/sign-in">
+              Giriş Yap
             </Link>
           </p>
-        </div>
-        <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-          <Label htmlFor="email">Email</Label>
-          <Input name="email" placeholder="you@example.com" required />
-          <SubmitButton formAction={forgotPasswordAction}>
-            Reset Password
-          </SubmitButton>
-          <FormMessage message={searchParams} />
-        </div>
-      </form>
-      <SmtpMessage />
-    </>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }

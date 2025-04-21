@@ -1,10 +1,11 @@
 import { signUpAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
+import { FormMessage } from "@/components/form-message";
+import type { Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { SmtpMessage } from "../smtp-message";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function Signup(props: {
   searchParams: Promise<Message>;
@@ -19,33 +20,63 @@ export default async function Signup(props: {
   }
 
   return (
-    <>
-      <form className="flex flex-col min-w-64 max-w-64 mx-auto">
-        <h1 className="text-2xl font-medium">Sign up</h1>
-        <p className="text-sm text text-foreground">
-          Already have an account?{" "}
-          <Link className="text-primary font-medium underline" href="/sign-in">
-            Sign in
-          </Link>
-        </p>
-        <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-          <Label htmlFor="email">Email</Label>
-          <Input name="email" placeholder="you@example.com" required />
-          <Label htmlFor="password">Password</Label>
-          <Input
-            type="password"
-            name="password"
-            placeholder="Your password"
-            minLength={6}
-            required
-          />
-          <SubmitButton formAction={signUpAction} pendingText="Signing up...">
-            Sign up
-          </SubmitButton>
-          <FormMessage message={searchParams} />
-        </div>
-      </form>
-      <SmtpMessage />
-    </>
+    <div className="container max-w-md mx-auto py-10 px-4">
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">Hesap Oluştur</CardTitle>
+          <CardDescription className="text-center">
+            Hesabınızı oluşturmak için bilgilerinizi girin
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <form className="flex flex-col space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-posta Adresi</Label>
+              <Input 
+                id="email"
+                name="email" 
+                type="email"
+                placeholder="ornek@email.com" 
+                autoComplete="email"
+                required 
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Şifre</Label>
+              <Input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                minLength={6}
+                required
+                className="w-full"
+              />
+              <p className="text-xs text-muted-foreground">
+                Şifreniz en az 6 karakter uzunluğunda olmalıdır
+              </p>
+            </div>
+            <SubmitButton 
+              formAction={signUpAction} 
+              pendingText="Kayıt Yapılıyor..."
+              className="w-full bg-primary hover:bg-primary/90 text-white font-medium"
+            >
+              Kayıt Ol
+            </SubmitButton>
+            <FormMessage message={searchParams} />
+          </form>
+        </CardContent>
+        <CardFooter className="flex flex-col border-t">
+          <p className="text-sm text-muted-foreground">
+            Zaten bir hesabınız var mı?{" "}
+            <Link className="text-primary font-medium hover:underline" href="/sign-in">
+              Giriş Yap
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }
