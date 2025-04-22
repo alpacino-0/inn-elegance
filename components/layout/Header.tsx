@@ -3,9 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, Building2, Info, Mail, Home } from 'lucide-react';
+import { Menu, Building2, Info, Mail, Home, LogIn, UserPlus, UserCircle, Settings, LogOut, ShieldAlert } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { MapIcon } from 'lucide-react';
+import { User } from '@supabase/supabase-js';
+import { UserProfile } from '@/types/user';
+import LoginStatus from '@/components/auth/LoginStatus';
+import { signOutAction } from '@/app/actions';
 import {
   Sheet,
   SheetContent,
@@ -15,8 +19,14 @@ import {
   SheetClose,
   SheetFooter
 } from "@/components/ui/sheet";
+import ProtectedLink from "@/components/ui/protected-link";
 
-const Header = () => {
+interface HeaderProps {
+  user: User | null;
+  userProfile: UserProfile | null;
+}
+
+const Header = ({ user, userProfile }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -132,39 +142,77 @@ const Header = () => {
           </Link>
 
           {/* Masaüstü Navigasyon */}
-          <nav className="hidden md:flex items-center space-x-6" aria-label="Ana navigasyon">
-            {/* Menü Linkleri */}
-            {menuItems.map((item) => (
-              <Link 
-                key={item.id}
-                href={item.href}
-                className={`relative transition-all duration-300 group text-sm font-medium
-                          hover:text-accent outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-md px-2 py-1
-                          ${item.active ? 'text-accent' : 'text-foreground'}`}
-                aria-current={item.active ? 'page' : undefined}
-              >
-                {item.text}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-current transition-all duration-300 
-                                ${item.active ? 'w-full' : 'w-0 group-hover:w-full'}`} />
-              </Link>
-            ))}
-          </nav>
+          <div className="hidden md:flex items-center justify-between flex-1 ml-8">
+            <nav className="flex items-center space-x-6" aria-label="Ana navigasyon">
+              {/* Menü Linkleri */}
+              {menuItems.map((item) => (
+                <Link 
+                  key={item.id}
+                  href={item.href}
+                  className={`relative transition-all duration-300 group text-sm font-medium
+                            hover:text-accent outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-md px-2 py-1
+                            ${item.active ? 'text-accent' : 'text-foreground'}`}
+                  aria-current={item.active ? 'page' : undefined}
+                >
+                  {item.text}
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-current transition-all duration-300 
+                                  ${item.active ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+                </Link>
+              ))}
+            </nav>
+            
+            {/* Login Status */}
+            <LoginStatus user={user} userProfile={userProfile} className="ml-4" />
+          </div>
 
           {/* Mobil Menü Butonu - Sheet Trigger ile */}
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-              <button
-                type="button"
-                ref={sheetTriggerRef}
-                className="md:hidden p-2 rounded-md hover:bg-muted transition-colors duration-300 active:scale-95 touch-manipulation
-                           outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                aria-label="Menüyü Aç"
-                aria-haspopup="dialog"
-                aria-expanded={isSheetOpen}
-              >
-                <Menu className="w-5 h-5 text-foreground transition-transform duration-300" />
-              </button>
-            </SheetTrigger>
+            <div className="md:hidden flex items-center ml-auto">
+              {/* Mobil Login Status - sadece butonları göster */}
+              {!user ? (
+                <Link 
+                  href="/sign-in" 
+                  className="text-sm font-medium mr-2 p-1.5 rounded-md hover:bg-muted transition-colors duration-200"
+                  aria-label="Giriş Yap"
+                >
+                  <LogIn className="w-5 h-5" />
+                </Link>
+              ) : (
+                <div className="flex items-center mr-2">
+                  <Link
+                    href="/protected/profile"
+                    className="p-1.5 rounded-md hover:bg-muted transition-colors duration-200"
+                    aria-label="Profil"
+                  >
+                    {userProfile?.avatar ? (
+                      <Image 
+                        src={userProfile.avatar} 
+                        alt={userProfile.name || 'Kullanıcı'} 
+                        width={20} 
+                        height={20} 
+                        className="w-5 h-5 rounded-full object-cover" 
+                      />
+                    ) : (
+                      <UserCircle className="w-5 h-5" />
+                    )}
+                  </Link>
+                </div>
+              )}
+              
+              <SheetTrigger asChild>
+                <button
+                  type="button"
+                  ref={sheetTriggerRef}
+                  className="p-2 rounded-md hover:bg-muted transition-colors duration-300 active:scale-95 touch-manipulation
+                             outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+                  aria-label="Menüyü Aç"
+                  aria-haspopup="dialog"
+                  aria-expanded={isSheetOpen}
+                >
+                  <Menu className="w-5 h-5 text-foreground transition-transform duration-300" />
+                </button>
+              </SheetTrigger>
+            </div>
             
             <SheetContent 
               side="right" 
@@ -183,6 +231,34 @@ const Header = () => {
                   />
                 </SheetTitle>
               </SheetHeader>
+              
+              {/* Mobil oturum durumu bilgisi */}
+              {user && (
+                <div className="px-4 py-3 border-b border-border">
+                  <div className="flex items-center">
+                    {userProfile?.avatar ? (
+                      <Image 
+                        src={userProfile.avatar} 
+                        alt={userProfile.name || 'Kullanıcı'} 
+                        width={32} 
+                        height={32} 
+                        className="w-8 h-8 rounded-full mr-3 object-cover" 
+                      />
+                    ) : (
+                      <UserCircle className="w-8 h-8 mr-3 text-foreground" />
+                    )}
+                    <div className="overflow-hidden">
+                      <p className="text-sm font-medium truncate">{userProfile?.name || user.email?.split('@')[0]}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                    {userProfile?.role === 'ADMIN' && (
+                      <span className="ml-auto px-1.5 py-0.5 bg-accent/20 text-accent-foreground/80 text-xs font-semibold rounded-full">
+                        Admin
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
               
               <div className="flex flex-col p-4 overflow-y-auto">
                 <nav className="flex flex-col space-y-1" aria-label="Mobil navigasyon">
@@ -205,6 +281,80 @@ const Header = () => {
                       </Link>
                     </SheetClose>
                   ))}
+                  
+                  {/* Oturum işlemleri menü öğeleri */}
+                  {!user ? (
+                    <>
+                      <div className="h-px my-2 bg-border" />
+                      <SheetClose asChild>
+                        <Link
+                          href="/sign-in"
+                          className="flex items-center text-base font-medium px-3 py-3 rounded-lg transition-all duration-200 hover:bg-muted/50"
+                        >
+                          <LogIn className="w-5 h-5 mr-3" />
+                          Giriş Yap
+                        </Link>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <Link
+                          href="/sign-up"
+                          className="flex items-center text-base font-medium px-3 py-3 rounded-lg transition-all duration-200 bg-accent text-accent-foreground"
+                        >
+                          <UserPlus className="w-5 h-5 mr-3" />
+                          Kaydol
+                        </Link>
+                      </SheetClose>
+                    </>
+                  ) : (
+                    <>
+                      <div className="h-px my-2 bg-border" />
+                      
+                      <SheetClose asChild>
+                        <Link
+                          href="/protected/profile"
+                          className="flex items-center text-base font-medium px-3 py-3 rounded-lg transition-all duration-200 hover:bg-muted/50"
+                        >
+                          <UserCircle className="w-5 h-5 mr-3" />
+                          Profilim
+                        </Link>
+                      </SheetClose>
+                      
+                      <SheetClose asChild>
+                        <Link
+                          href="/protected/settings"
+                          className="flex items-center text-base font-medium px-3 py-3 rounded-lg transition-all duration-200 hover:bg-muted/50"
+                        >
+                          <Settings className="w-5 h-5 mr-3" />
+                          Ayarlar
+                        </Link>
+                      </SheetClose>
+                      
+                      {userProfile?.role === 'ADMIN' && (
+                        <SheetClose asChild>
+                          <ProtectedLink
+                            href="/protected/admin"
+                            userProfile={userProfile}
+                            requiredRole="ADMIN"
+                            className="flex items-center text-base font-medium px-3 py-3 rounded-lg transition-all duration-200 hover:bg-muted/50"
+                          >
+                            <ShieldAlert className="w-5 h-5 mr-3" />
+                            Admin Paneli
+                          </ProtectedLink>
+                        </SheetClose>
+                      )}
+                      
+                      <button
+                        onClick={async () => {
+                          setIsSheetOpen(false);
+                          await signOutAction();
+                        }}
+                        className="flex items-center text-base font-medium px-3 py-3 rounded-lg transition-all duration-200 hover:bg-destructive/10 text-destructive text-left"
+                      >
+                        <LogOut className="w-5 h-5 mr-3" />
+                        Çıkış Yap
+                      </button>
+                    </>
+                  )}
                 </nav>
               </div>
               

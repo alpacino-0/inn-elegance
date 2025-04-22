@@ -35,17 +35,54 @@ export const updateSession = async (request: NextRequest) => {
       },
     );
 
-    // This will refresh session if expired - required for Server Components
-    // https://supabase.com/docs/guides/auth/server-side/nextjs
-    const user = await supabase.auth.getUser();
-
-    // protected routes
-    if (request.nextUrl.pathname.startsWith("/protected") && user.error) {
-      return NextResponse.redirect(new URL("/sign-in", request.url));
-    }
-
-    if (request.nextUrl.pathname === "/" && !user.error) {
+    // Oturum bilgilerini al
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    // Ana sayfa yönlendirmesi
+    if (request.nextUrl.pathname === "/" && !userError) {
       return NextResponse.redirect(new URL("/protected", request.url));
+    }
+    
+    // Giriş/kayıt sayfaları yönlendirmesi
+    if ((request.nextUrl.pathname === "/sign-in" || request.nextUrl.pathname === "/sign-up") && !userError) {
+      return NextResponse.redirect(new URL("/protected", request.url));
+    }
+    
+    // 1. Korumalı rotalar kontrolü (tüm /protected/* rotaları)
+    if (request.nextUrl.pathname.startsWith("/protected")) {
+      // Giriş yapmamış kullanıcılar için
+      if (userError) {
+        return NextResponse.redirect(new URL("/sign-in", request.url));
+      }
+      
+      // Kullanıcı bilgilerini ve rolünü kontrol et
+      if (user) {
+        const { data: userData, error: profileError } = await supabase
+          .from('User')
+          .select('role, status')
+          .eq('id', user.id)
+          .single();
+          
+        // Kullanıcı profili bulunamadı veya hata oluştu
+        if (profileError || !userData) {
+          await supabase.auth.signOut();
+          return NextResponse.redirect(new URL("/sign-in?error=profile_not_found", request.url));
+        }
+        
+        // Yasaklı veya inaktif kullanıcı
+        if (userData.status !== 'ACTIVE') {
+          await supabase.auth.signOut();
+          return NextResponse.redirect(new URL("/sign-in?error=account_inactive", request.url));
+        }
+        
+        // 2. Admin rotaları kontrolü
+        if (request.nextUrl.pathname.startsWith("/protected/admin")) {
+          if (userData.role !== 'ADMIN') {
+            // Admin değilse erişim engellenir
+            return NextResponse.redirect(new URL("/protected?error=unauthorized", request.url));
+          }
+        }
+      }
     }
 
     return response;
@@ -53,6 +90,7 @@ export const updateSession = async (request: NextRequest) => {
     // If you are here, a Supabase client could not be created!
     // This is likely because you have not set up environment variables.
     // Check out http://localhost:3000 for Next Steps.
+    console.error("Middleware error:", e);
     return NextResponse.next({
       request: {
         headers: request.headers,

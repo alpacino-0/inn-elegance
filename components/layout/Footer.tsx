@@ -142,7 +142,6 @@ const Footer = () => {
                           ${!openSections.quickLinks ? 'max-h-0 md:max-h-[500px]' : 'max-h-[500px]'}`}>
               {[
                 { text: 'Ana Sayfa', href: '/', id: 'home' },
-                { text: 'Kayıt Ol', href: '/sign-up', id: 'signup' },
                 { text: 'Villalar', href: '/villa-kiralama', id: 'villas' },
                 { text: 'Bölgeler', href: '/villa-kiralama-bolgeleri', id: 'locations' },
                 { text: 'Hakkımızda', href: '/villa-kiralama-hakkimizda', id: 'about' },
