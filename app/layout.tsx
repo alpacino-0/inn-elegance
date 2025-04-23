@@ -3,7 +3,8 @@ import "./globals.css";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { createClient } from '@/utils/supabase/server';
-import { type Metadata } from 'next';
+import type { Metadata } from 'next';
+import { Providers } from "./providers";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -59,11 +60,13 @@ export default async function RootLayout({
   return (
     <html lang="tr" className={`${nunito.variable} ${montserrat.variable}`} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
-        <Header user={user} userProfile={userProfile} />
-         <main className="flex-grow">
-           {children}
-         </main>
-        <Footer />
+        <Providers>
+          <Header user={user} userProfile={userProfile} />
+           <main className="flex-grow">
+             {children}
+           </main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
