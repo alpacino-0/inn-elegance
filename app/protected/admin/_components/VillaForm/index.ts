@@ -6,6 +6,4 @@ export * from './LocationTab';
 export * from './FeaturesTab';
 export * from './RulesTab';
 export * from './PricingTab';
-export * from './NotesTab';
-export * from './AdvancedTab';
 export * from './types'; 

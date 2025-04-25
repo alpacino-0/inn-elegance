@@ -13,8 +13,6 @@ import { LocationTab } from './LocationTab';
 import { FeaturesTab } from './FeaturesTab';
 import { RulesTab } from './RulesTab';
 import { PricingTab } from './PricingTab';
-import { NotesTab } from './NotesTab';
-import { AdvancedTab } from './AdvancedTab';
 import type { FormHelpers } from './types';
 
 // Bölgeleri yüklemek için hook
@@ -204,8 +202,6 @@ export default function VillaForm({ initialData, onSubmit, isSubmitting }: Villa
           <TabsTrigger value="features">Özellikler</TabsTrigger>
           <TabsTrigger value="rules">Kurallar</TabsTrigger>
           <TabsTrigger value="pricing">Fiyatlandırma</TabsTrigger>
-          <TabsTrigger value="notes">Notlar</TabsTrigger>
-          <TabsTrigger value="advanced">Gelişmiş</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -229,14 +225,6 @@ export default function VillaForm({ initialData, onSubmit, isSubmitting }: Villa
 
         <TabsContent value="pricing">
           <PricingTab formData={formData} helpers={formHelpers} />
-        </TabsContent>
-
-        <TabsContent value="notes">
-          <NotesTab formData={formData} helpers={formHelpers} />
-        </TabsContent>
-
-        <TabsContent value="advanced">
-          <AdvancedTab formData={formData} helpers={formHelpers} />
         </TabsContent>
       </Tabs>
 

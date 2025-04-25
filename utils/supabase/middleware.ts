@@ -38,10 +38,7 @@ export const updateSession = async (request: NextRequest) => {
     // Oturum bilgilerini al
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
-    // Ana sayfa yönlendirmesi
-    if (request.nextUrl.pathname === "/" && !userError) {
-      return NextResponse.redirect(new URL("/protected", request.url));
-    }
+    // Ana sayfa yönlendirmesi kaldırıldı
     
     // Giriş/kayıt sayfaları yönlendirmesi
     if ((request.nextUrl.pathname === "/sign-in" || request.nextUrl.pathname === "/sign-up") && !userError) {

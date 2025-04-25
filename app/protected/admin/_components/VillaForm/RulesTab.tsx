@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { useState } from 'react';
+import { Textarea } from '@/components/ui/textarea';
 import type { TabProps } from './types';
 
 // Önceden tanımlanmış kurallar
@@ -19,12 +19,11 @@ const PREDEFINED_RULES = [
 ];
 
 export function RulesTab({ formData, helpers }: TabProps) {
-  const { handleArrayChange, updateFormData } = helpers;
+  const { updateFormData, handleInputChange } = helpers;
   const [customRule, setCustomRule] = useState('');
 
   // Dizilere varsayılan değer atama
   const rules = formData.rules || [];
-  const houseRules = formData.houseRules || [];
 
   // Checkbox değişikliğini işleyecek fonksiyon
   const handleRuleCheckboxChange = (rule: string, checked: boolean) => {
@@ -53,14 +52,14 @@ export function RulesTab({ formData, helpers }: TabProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl font-bold font-montserrat text-primary">
-          Kurallar
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-bold font-montserrat text-primary">
+            Kurallar
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="space-y-4">
             <Label className="text-base font-semibold">
               Kurallar <span className="text-destructive">*</span>
@@ -126,27 +125,94 @@ export function RulesTab({ formData, helpers }: TabProps) {
               </div>
             )}
           </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="houseRules">
-              Ev Kuralları <span className="text-destructive">*</span>
-            </Label>
-            <Textarea
-              id="houseRules"
-              name="houseRules"
-              value={houseRules.join(', ')}
-              onChange={(e) => handleArrayChange('houseRules', e.target.value)}
-              required
-              placeholder="Virgülle ayırın (örn: çöpleri çıkarın, kapıyı kilitleyin)"
-            />
-            <div className="pt-2 flex flex-wrap">
-              {houseRules.map(rule => (
-                <Badge key={rule} variant="outline" className="mr-1 mb-1">{rule}</Badge>
-              ))}
+        </CardContent>
+      </Card>
+
+      {/* Giriş/Çıkış Bilgileri ve Notlar bölümü */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-bold font-montserrat text-primary">
+            Giriş/Çıkış Bilgileri ve Notlar
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="checkInTime">
+                Giriş Saati <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="checkInTime"
+                name="checkInTime"
+                type="text"
+                value={formData.checkInTime}
+                onChange={handleInputChange}
+                placeholder="16:00"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="checkOutTime">
+                Çıkış Saati <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="checkOutTime"
+                name="checkOutTime"
+                type="text"
+                value={formData.checkOutTime}
+                onChange={handleInputChange}
+                placeholder="10:00"
+                required
+              />
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="checkInNotes">
+                Giriş Notları
+              </Label>
+              <Textarea
+                id="checkInNotes"
+                name="checkInNotes"
+                value={formData.checkInNotes ?? ''}
+                onChange={handleInputChange}
+                rows={3}
+                placeholder="Giriş yapacak misafirler için notlar..."
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="checkOutNotes">
+                Çıkış Notları
+              </Label>
+              <Textarea
+                id="checkOutNotes"
+                name="checkOutNotes"
+                value={formData.checkOutNotes ?? ''}
+                onChange={handleInputChange}
+                rows={3}
+                placeholder="Çıkış yapacak misafirler için notlar..."
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="cancellationNotes">
+              İptal Koşulları
+            </Label>
+            <Textarea
+              id="cancellationNotes"
+              name="cancellationNotes"
+              value={formData.cancellationNotes ?? ''}
+              onChange={handleInputChange}
+              rows={3}
+              placeholder="Rezervasyon iptali ile ilgili koşullar..."
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 } 

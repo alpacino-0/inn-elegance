@@ -1,8 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import VillaDetail from '@/app/protected/admin/_components/VillaDetail';
 import { use } from 'react';
+import VillaDetail from '@/app/protected/admin/_components/VillaDetail';
+import VillaAmenitiesManager from '@/app/protected/admin/_components/VillaAmenitiesManager';
+import { VillaSeasonalPrices } from '@/app/protected/admin/_components/VillaSeasonalPrices';
+import { VillaTagsSelector } from '@/app/protected/admin/_components/VillaTagsSelector';
+import VillaAITab from '@/app/protected/admin/_components/VillaAITab';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface VillaDetailPageProps {
   params: Promise<{
@@ -42,7 +47,38 @@ export default function VillaDetailPage({ params }: VillaDetailPageProps) {
         </button>
       </div>
 
-      <VillaDetail villaId={villaId} />
+      <Tabs defaultValue="details" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="details">Villa Detayı</TabsTrigger>
+          <TabsTrigger value="tags">Etiketler</TabsTrigger>
+          <TabsTrigger value="amenities">Olanaklar</TabsTrigger>
+          <TabsTrigger value="prices">Sezonsal Fiyatlar</TabsTrigger>
+          <TabsTrigger value="ai">AI İçerik Üretici</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="details">
+          <VillaDetail villaId={villaId} />
+        </TabsContent>
+        
+        <TabsContent value="tags">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-6">Villa Etiketleri</h2>
+            <VillaTagsSelector villaId={villaId} />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="amenities">
+          <VillaAmenitiesManager villaId={villaId} />
+        </TabsContent>
+        
+        <TabsContent value="prices">
+          <VillaSeasonalPrices villaId={villaId} />
+        </TabsContent>
+
+        <TabsContent value="ai">
+          <VillaAITab villaId={villaId} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 } 

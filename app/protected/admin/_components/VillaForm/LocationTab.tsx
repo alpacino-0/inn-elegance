@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import type { TabProps } from './types';
 
 export function LocationTab({ formData, helpers }: TabProps) {
@@ -9,7 +10,8 @@ export function LocationTab({ formData, helpers }: TabProps) {
     subRegions, 
     isRegionSelected, 
     showSubRegionSelect, 
-    handleSelectChange 
+    handleSelectChange,
+    handleInputChange
   } = helpers;
 
   return (
@@ -68,6 +70,20 @@ export function LocationTab({ formData, helpers }: TabProps) {
               </p>
             )}
           </div>
+        </div>
+
+        <div className="space-y-2 mt-2">
+          <Label htmlFor="embedCode">
+            Embed Kodu
+          </Label>
+          <Textarea
+            id="embedCode"
+            name="embedCode"
+            value={formData.embedCode ?? ''}
+            onChange={handleInputChange}
+            rows={3}
+            placeholder="İframe veya embed kodu"
+          />
         </div>
       </CardContent>
     </Card>

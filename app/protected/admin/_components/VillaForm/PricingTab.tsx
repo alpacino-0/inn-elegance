@@ -1,11 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { VillaSeasonalPrices } from './VillaSeasonalPrices';
 import type { TabProps } from './types';
 
 export function PricingTab({ formData, helpers }: TabProps) {
-  const { handleInputChange, initialData } = helpers;
+  const { handleInputChange } = helpers;
 
   return (
     <div className="space-y-6">
@@ -81,11 +80,6 @@ export function PricingTab({ formData, helpers }: TabProps) {
           </div>
         </CardContent>
       </Card>
-
-      {/* Sezonsal fiyatlandırma bileşeni - Sadece kayıtlı villalar için göster */}
-      {initialData && initialData.id && (
-        <VillaSeasonalPrices villaId={initialData.id} />
-      )}
     </div>
   );
 } 
