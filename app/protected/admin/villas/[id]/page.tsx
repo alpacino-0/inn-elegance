@@ -8,6 +8,7 @@ import { VillaSeasonalPrices } from '@/app/protected/admin/_components/VillaSeas
 import { VillaTagsSelector } from '@/app/protected/admin/_components/VillaTagsSelector';
 import VillaAITab from '@/app/protected/admin/_components/VillaAITab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import CalendarManager from '@/app/protected/admin/_components/CalendarManager';
 
 interface VillaDetailPageProps {
   params: Promise<{
@@ -53,6 +54,7 @@ export default function VillaDetailPage({ params }: VillaDetailPageProps) {
           <TabsTrigger value="tags">Etiketler</TabsTrigger>
           <TabsTrigger value="amenities">Olanaklar</TabsTrigger>
           <TabsTrigger value="prices">Sezonsal Fiyatlar</TabsTrigger>
+          <TabsTrigger value="calendar">Takvim</TabsTrigger>
           <TabsTrigger value="ai">AI İçerik Üretici</TabsTrigger>
         </TabsList>
         
@@ -73,6 +75,10 @@ export default function VillaDetailPage({ params }: VillaDetailPageProps) {
         
         <TabsContent value="prices">
           <VillaSeasonalPrices villaId={villaId} />
+        </TabsContent>
+
+        <TabsContent value="calendar">
+          <CalendarManager villaId={villaId} />
         </TabsContent>
 
         <TabsContent value="ai">

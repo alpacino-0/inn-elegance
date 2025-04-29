@@ -85,7 +85,7 @@ function AddSeasonalPriceForm({ villaId }: { villaId: string }) {
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? (value ? parseFloat(value) : 0) : value
+      [name]: type === 'number' ? (value ? Number.parseFloat(value) : 0) : value
     }));
   };
 
@@ -300,7 +300,7 @@ function SeasonalPriceItem({ price, villaId }: { price: SeasonalPrice; villaId: 
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? (value ? parseFloat(value) : 0) : value
+      [name]: type === 'number' ? (value ? Number.parseFloat(value) : 0) : value
     }));
   };
 
