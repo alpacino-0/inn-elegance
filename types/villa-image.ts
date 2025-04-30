@@ -1,30 +1,29 @@
 // Villa görseli temel tip tanımı
 export interface VillaImage {
-  id: string; // uuid
-  villaId: string; // uuid
-  imageUrl: string;
+  id: string;
+  villaId: string;
+  url: string;
+  alt: string | null;
   title: string | null;
-  altText: string | null;
-  order: number;
-  isCoverImage: boolean;
-  createdAt: string; // timestamp with timezone
+  isFeatured: boolean;
+  displayOrder: number;
+  createdAt: string;
 }
 
 // Villa görseli oluşturma DTO
 export interface CreateVillaImageDto {
-  villaId: string;
-  imageUrl: string;
+  url: string;
+  alt?: string | null;
   title?: string | null;
-  altText?: string | null;
-  order?: number;
-  isCoverImage?: boolean;
+  isFeatured?: boolean;
+  displayOrder?: number;
 }
 
 // Villa görseli güncelleme DTO
 export interface UpdateVillaImageDto {
-  imageUrl?: string;
+  url?: string;
+  alt?: string | null;
   title?: string | null;
-  altText?: string | null;
-  order?: number;
-  isCoverImage?: boolean;
+  isFeatured?: boolean;
+  displayOrder?: number;
 } 

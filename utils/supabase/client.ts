@@ -1,7 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/types/supabase';
+import { createBrowserClient } from "@supabase/ssr";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+export const createClient = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Supabase URL ve anahtarı tanımlanmamış');
+  }
+  
+  return createBrowserClient(supabaseUrl, supabaseKey);
+};
