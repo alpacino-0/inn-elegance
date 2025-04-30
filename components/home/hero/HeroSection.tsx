@@ -45,7 +45,7 @@ const HeroSection = ({
   }, [backgroundImages.length]);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section className="relative h-[85vh] sm:h-screen w-full overflow-hidden">
       {/* Arka plan görselleri */}
       {backgroundImages.map((image, index) => (
         <div
@@ -67,10 +67,10 @@ const HeroSection = ({
       ))}
 
       {/* Hero içeriği */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
-        <div className="max-w-4xl">
-          <h1 className="mb-4 text-white drop-shadow-lg">{title}</h1>
-          <p className="mb-8 text-xl text-white drop-shadow-md">{subtitle}</p>
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 sm:px-6 text-center">
+        <div className="max-w-xl sm:max-w-2xl md:max-w-4xl">
+          <h1 className="mb-3 sm:mb-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white drop-shadow-lg">{title}</h1>
+          <p className="mb-6 sm:mb-8 text-base sm:text-lg md:text-xl text-white drop-shadow-md">{subtitle}</p>
           
           {/* Arama çubuğu */}
          {/*<div className="mx-auto w-full max-w-3xl rounded-lg bg-white/10 p-4 backdrop-blur-md">
@@ -78,12 +78,12 @@ const HeroSection = ({
           </div> */}
           
           {/* Slider göstergeleri */}
-          <div className="mt-8 flex justify-center space-x-2">
+          <div className="mt-6 sm:mt-8 flex justify-center space-x-2">
             {backgroundImages.map((image, index) => (
               <button
                 key={`indicator-${image.id}`}
                 type="button"
-                className={`h-2 w-8 rounded-full transition-colors ${
+                className={`h-1.5 sm:h-2 w-6 sm:w-8 rounded-full transition-colors ${
                   index === currentImageIndex
                     ? "bg-primary"
                     : "bg-white/50 hover:bg-white/80"

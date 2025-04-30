@@ -100,12 +100,12 @@ export default async function PopularVillas() {
   const villas = villasWithImages as unknown as (Villa & { villaImages?: string[] })[];
 
   return (
-    <section className="w-full max-w-6xl mx-auto py-8">
-      <h2 className="text-2xl font-bold mb-2">Popüler Villalar</h2>
-      <p className="text-muted-foreground mb-6">
+    <section className="w-full max-w-6xl mx-auto py-4 sm:py-8">
+      <h2 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 px-4 sm:px-0">Popüler Villalar</h2>
+      <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-4 sm:px-0">
         En çok tercih edilen villalarımızı hemen inceleyin.
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-6 lg:px-0">
         {villas.map((villa) => (
           <VillaCard 
             key={villa.id} 

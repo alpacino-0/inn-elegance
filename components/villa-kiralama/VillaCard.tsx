@@ -247,11 +247,11 @@ const OptimizedImage = memo(({ src, alt, priority = false }: OptimizedImageProps
         src={src}
         alt={alt}
         fill
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
         className="object-cover"
         loading={priority ? "eager" : "lazy"}
         priority={priority}
-        quality={80}
+        quality={75}
       />
     </div>
   );
@@ -289,7 +289,7 @@ const ImageSlider = memo(({
   isSwiping
 }: ImageSliderProps) => {
   const aspectRatioStyles = {
-    aspectRatio: '4/3',
+    aspectRatio: '3/2',
     padding: 0,
     margin: 0,
     lineHeight: 0
@@ -593,7 +593,7 @@ export const VillaCard = memo(({
   }, [finalImageUrls, villa.id, villa.title]);
   
   return (
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 bg-card border-border shadow-sm h-full p-0">
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 bg-card border-border shadow-sm h-full p-0">
       {/* Resim slider */}
       <div className="w-full overflow-hidden p-0 m-0" style={zeroPaddingStyles}>
         <ImageSlider 
@@ -616,10 +616,10 @@ export const VillaCard = memo(({
         <div>
           <CardHeader className="px-3 py-2 pt-2.5 pb-1">
             {/* Villa adı ve bölge bilgisi */}
-            <CardTitle className="text-xl font-semibold text-card-foreground mb-0.5 line-clamp-1 font-montserrat">
+            <CardTitle className="text-lg sm:text-xl font-semibold text-card-foreground mb-0.5 line-clamp-1 font-montserrat">
               {villa.title}
             </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground font-medium font-nunito flex items-center">
+            <CardDescription className="text-xs sm:text-sm text-muted-foreground font-medium font-nunito flex items-center">
               <MapPin size={14} className="text-accent mr-1.5 flex-shrink-0" />
               <span className="truncate">
                 {villa.mainRegion && villa.subRegion 
@@ -646,7 +646,7 @@ export const VillaCard = memo(({
             asChild
             variant="default"
             size="sm"
-            className="bg-accent hover:bg-accent/90 text-accent-foreground py-1.5 px-3.5 rounded text-sm font-medium transition-colors h-8"
+            className="bg-accent hover:bg-accent/90 text-accent-foreground py-1 sm:py-1.5 px-2.5 sm:px-3.5 rounded text-xs sm:text-sm font-medium transition-colors h-7 sm:h-8"
           >
             <Link href={`/villa-kiralama/${villa.slug}`}>
               {detaylariGorText}
