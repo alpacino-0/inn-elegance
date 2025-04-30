@@ -2,28 +2,29 @@
 export interface VillaImage {
   id: string;
   villaId: string;
-  url: string;
-  alt: string | null;
+  imageUrl: string;
   title: string | null;
-  isFeatured: boolean;
-  displayOrder: number;
+  altText: string | null;
+  order: number;
+  isCoverImage: boolean;
   createdAt: string;
 }
 
 // Villa görseli oluşturma DTO
 export interface CreateVillaImageDto {
-  url: string;
-  alt?: string | null;
+  villaId?: string;
+  imageUrl: string;
   title?: string | null;
-  isFeatured?: boolean;
-  displayOrder?: number;
+  altText?: string | null;
+  order?: number;
+  isCoverImage?: boolean;
 }
 
 // Villa görseli güncelleme DTO
 export interface UpdateVillaImageDto {
-  url?: string;
-  alt?: string | null;
+  imageUrl?: string;
   title?: string | null;
-  isFeatured?: boolean;
-  displayOrder?: number;
+  altText?: string | null;
+  order?: number;
+  isCoverImage?: boolean;
 } 

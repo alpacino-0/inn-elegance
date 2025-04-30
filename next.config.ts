@@ -5,6 +5,13 @@ const nextConfig: NextConfig = {
   experimental: {
     // Next.js 15 desteklenen experimental özellikleri burada tanımlanabilir
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: 'mfaexsxibqfwtpchkppy.supabase.co',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
