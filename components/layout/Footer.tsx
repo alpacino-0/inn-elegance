@@ -143,7 +143,7 @@ const Footer = () => {
               {[
                 { text: 'Ana Sayfa', href: '/', id: 'home' },
                 { text: 'Villalar', href: '/villa-kiralama', id: 'villas' },
-                { text: 'Bölgeler', href: '/villa-kiralama-bolgeleri', id: 'locations' },
+                { text: 'Hizmetler', href: '/villa-kiralama-hizmetler', id: 'services' },
                 { text: 'Hakkımızda', href: '/villa-kiralama-hakkimizda', id: 'about' },
                 { text: 'İletişim', href: '/villa-kiralama-iletisim', id: 'contact' }
               ].map((item) => (
@@ -174,7 +174,6 @@ const Footer = () => {
               {[
                 { text: 'Gizlilik Şartları', href: '/villa-kiralama-gizlilik-sartlari', id: 'privacy' },
                 { text: 'Sıkça Sorulan Sorular', href: '/villa-kiralama-sikca-sorulan-sorular', id: 'faq' },
-                { text: 'Ev Sahibi Sözleşmesi', href: '/villa-kiralama-ev-sahibi-sozlesmesi', id: 'host' },
                 { text: 'İptal Koşulları', href: '/villa-kiralama-iptal-kosullari', id: 'cancel' },
                 { text: 'Villa Kiralama Sözleşmesi', href: '/villa-kiralama-sozlesmesi', id: 'rental' },
                 { text: 'KVKK Aydınlatma Metni', href: '/kisisel-verilerin-korunmasi-hakkinda-aydinlatma-metni', id: 'gdpr' }

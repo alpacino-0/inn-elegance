@@ -2,8 +2,8 @@
 
 import type { Villa } from "@/types/villa";
 import LeftColumn from "@/components/villa-kiralama/slug/content/LeftColumn";
-//import RightColumn from "@/components/villa-kiralama/slug/content/RightColumn";
-//import VillaSupport from "@/components/villa-kiralama/slug/support/VillaSupport";
+import RightColumn from "@/components/villa-kiralama/slug/content/RightColumn";
+import VillaSupport from "@/components/villa-kiralama/slug/support/VillaSupport";
 
 interface ContentContainerProps {
   villa: Villa;
@@ -15,7 +15,7 @@ export default function ContentContainer({ villa }: ContentContainerProps) {
       {/* Sağ Kolon - Rezervasyon formu - Mobilde üstte görünsün */}
       <div className="lg:col-span-4 order-1 lg:order-2 mb-4 lg:mb-0">
         <div className="lg:sticky lg:top-6 space-y-4">
-          {/* <RightColumn villa={villa} /> */}
+          <RightColumn villa={villa} />
         </div>
       </div>
       
@@ -26,10 +26,10 @@ export default function ContentContainer({ villa }: ContentContainerProps) {
       
       {/* VillaSupport - Mobilde her zaman en altta görünsün, masaüstünde sağ kolonda gösterilecek */}
       <div className="order-3 lg:hidden">
-        {/* <VillaSupport 
+        <VillaSupport 
           villaId={villa.id}
           villaTitle={villa.title}
-        /> */}
+        />
       </div>
     </div>
   );

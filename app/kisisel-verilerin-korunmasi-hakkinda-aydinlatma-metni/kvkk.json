@@ -1,0 +1,253 @@
+{
+    "title": {
+      "tr": "INN ELEGANCE LIMITED LIABILITY COMPANY - KİŞİSEL VERİLERİN KORUNMASI VE İŞLENMESİ POLİTİKASI İLE MÜŞTERİ AYDINLATMA METNİ",
+      "en": "INN ELEGANCE LIMITED LIABILITY COMPANY - PERSONAL DATA PROTECTION AND PROCESSING POLICY AND CUSTOMER INFORMATION NOTICE"
+    },
+    "introduction": [
+      {
+        "type": "paragraph",
+        "content": {
+          "tr": "Öncelikle, Inn Elegance markası ve www.innelegance.com internet sitemizin tamamen Inn Elegance LLC'ye ait olduğunu resmi olarak duyurmaktan memnuniyet duyarız.",
+          "en": "Firstly, we are pleased to officially announce that the Inn Elegance brand and our website www.innelegance.com are entirely owned by Inn Elegance LLC."
+        }
+      },
+      {
+        "type": "paragraph",
+        "content": {
+          "tr": "Inn Elegance LLC, Florida merkezli bir şirket olup, lüks villa, daire, otel ve diğer konaklama seçenekleri sunan bir platformdur. Misafirlerimize konforlu ve özel tatil deneyimleri sağlamayı amaçlayan Inn Elegance, her bir konaklama biriminde unutulmaz bir tatil fırsatı sunmayı hedeflemektedir.",
+          "en": "Inn Elegance LLC is a Florida-based company offering a platform for luxury villas, apartments, hotels, and other accommodation options. Aiming to provide our guests with comfortable and exclusive holiday experiences, Inn Elegance targets offering an unforgettable vacation opportunity in each accommodation unit."
+        }
+      },
+      {
+        "type": "paragraph",
+        "content": {
+          "tr": "Platformumuz, kullanıcılara geniş bir konaklama yelpazesi sunarak tatillerini kolayca planlama imkânı sağlar. Inn Elegance, kullanıcı dostu arayüzü ve güvenilir kiralama deneyimiyle, misafirlerine lüks ve rahat bir tatil için ideal seçenekler sunmaktadır. Tatilciler, konforu, estetiği ve benzersiz deneyimi bir arada bulmak için platformumuzu tercih etmektedir.",
+          "en": "Our platform offers users a wide range of accommodation, enabling them to easily plan their holidays. With its user-friendly interface and reliable rental experience, Inn Elegance provides ideal options for guests seeking a luxurious and comfortable vacation. Holidaymakers prefer our platform to find comfort, aesthetics, and unique experiences all in one place."
+        }
+      }
+    ],
+    "sections": [
+      {
+        "id": "policy-scope",
+        "title": {
+          "tr": "Madde 1: Kişisel Verilerin Korunması ve İşlenmesi Politikası",
+          "en": "Article 1: Personal Data Protection and Processing Policy"
+        },
+        "content": [
+          {
+            "type": "paragraph",
+            "text": {
+              "tr": "Kişisel verilerin korunması, Inn Elegance LLC'nin en önemli önceliklerinden biridir. Bu politika, şirketimizin çalışan adayları, şirket ortakları, şirket yetkilileri, iş birliği yaptığı kurumların çalışanları, ortakları ve yetkilileri ile müşterileri ve ziyaretçi üçüncü kişilerin kişisel verilerinin korunmasına yönelik olarak yönetilmektedir.",
+              "en": "The protection of personal data is one of the top priorities of Inn Elegance LLC. This policy governs the protection of personal data of our company's employee candidates, company partners, company officials, employees, partners, and officials of collaborating institutions, as well as customers and visiting third parties."
+            }
+          },
+          {
+            "type": "paragraph",
+            "text": {
+              "tr": "Bu politika çerçevesinde, yasal mevzuat çerçevesinde işlenen kişisel verilerin korunması için gereken idari ve teknik tedbirler alınmaktadır.",
+              "en": "Within the framework of this policy, necessary administrative and technical measures are taken to protect personal data processed in accordance with legal regulations."
+            }
+          }
+        ]
+      },
+      {
+        "id": "processing-principles",
+        "title": {
+          "tr": "Madde 2: İşlenen Kişisel Verilerin Temel İlkeleri",
+          "en": "Article 2: Fundamental Principles of Processing Personal Data"
+        },
+        "content": [
+          {
+            "type": "paragraph",
+            "text": {
+              "tr": "Inn Elegance LLC olarak, müşterilerimizin ve kullanıcılarımızın kişisel verilerinin korunmasına büyük önem veriyoruz. Florida eyaletinde faaliyet gösteren bir şirket olarak, kişisel veri güvenliğini sağlamak ve gizliliğinizi korumak için çeşitli yasal düzenlemelere ve en iyi uygulamalara uymaktayız. Bu bağlamda, aşağıdaki yasa ve düzenlemelere uygun olarak kişisel verilerinizi işlemekteyiz:",
+              "en": "As Inn Elegance LLC, we place great importance on the protection of the personal data of our customers and users. As a company operating in the state of Florida, we comply with various legal regulations and best practices to ensure personal data security and protect your privacy. In this context, we process your personal data in accordance with the following laws and regulations:"
+            }
+          },
+          {
+            "type": "subpoint",
+            "title": {
+              "tr": "2.1. Florida Information Protection Act (FIPA)",
+              "en": "2.1. Florida Information Protection Act (FIPA)"
+            },
+            "text": {
+              "tr": "Florida'da, kişisel verilerin korunmasını sağlayan en önemli yasal çerçeve Florida Information Protection Act (FIPA)'dır. Bu yasa, veri güvenliği ihlallerini önlemeyi ve kullanıcı bilgilerini güvenli bir şekilde saklamayı amaçlamaktadır. Inn Elegance LLC olarak, kişisel verilerinizi yalnızca güvenli bir ortamda işliyoruz ve veri ihlali durumunda yasal gerekliliklere uygun olarak hızlı ve doğru bildirimde bulunuruz.",
+              "en": "In Florida, the most important legal framework ensuring the protection of personal data is the Florida Information Protection Act (FIPA). This act aims to prevent data security breaches and store user information securely. As Inn Elegance LLC, we process your personal data only in a secure environment and provide prompt and accurate notification in accordance with legal requirements in the event of a data breach."
+            }
+          },
+          {
+            "type": "subpoint",
+            "title": {
+              "tr": "2.2. Florida's Data Breach Notification Law",
+              "en": "2.2. Florida's Data Breach Notification Law"
+            },
+            "text": {
+              "tr": "Inn Elegance LLC, Florida'nın Data Breach Notification Law yasasına tamamen uyar. Bu yasa, kişisel verilerin ihlal edilmesi durumunda etkilenen bireylere bildirimin yapılmasını zorunlu kılar. Bir veri ihlali durumunda, kullanıcılarımızı en geç 30 gün içinde bilgilendirir ve ihlalin etkilerini minimize etmek için gerekli önlemleri alırız.",
+              "en": "Inn Elegance LLC fully complies with Florida's Data Breach Notification Law. This law mandates notification to affected individuals in the event of a personal data breach. In case of a data breach, we inform our users within 30 days at the latest and take necessary measures to minimize the impact of the breach."
+            }
+          },
+          {
+            "type": "subpoint",
+            "title": {
+              "tr": "2.3. Sosyal Güvenlik Numarası Koruma Yasası",
+              "en": "2.3. Social Security Number Protection Law"
+            },
+            "text": {
+              "tr": "Veri güvenliğine dair sorumluluklarımızın bir parçası olarak, Inn Elegance LLC, Florida Sosyal Güvenlik Numarası Koruma Yasası'na uyar. Sosyal Güvenlik numaralarını yalnızca yasal ve meşru amaçlarla toplar ve saklarız. Bu bilgileri güvende tutmak için gerekli tüm teknik ve idari önlemleri alırız.",
+              "en": "As part of our data security responsibilities, Inn Elegance LLC complies with the Florida Social Security Number Protection Law. We collect and store Social Security numbers only for legal and legitimate purposes. We take all necessary technical and administrative measures to keep this information secure."
+            }
+          },
+          {
+            "type": "subpoint",
+            "title": {
+              "tr": "2.4. Diğer İlgili Yasalar ve Düzenlemeler",
+              "en": "2.4. Other Relevant Laws and Regulations"
+            },
+            "text": {
+              "tr": "Bunun dışında, Inn Elegance LLC, California Consumer Privacy Act (CCPA) ve Avrupa Birliği Genel Veri Koruma Yönetmeliği (GDPR) gibi diğer ulusal ve uluslararası veri koruma yasalarına da uygun hareket eder. Bu yasalar, kullanıcıların kişisel verilerini nasıl işlediğimizi ve nasıl koruduğumuzu şeffaf bir şekilde düzenler.",
+              "en": "Additionally, Inn Elegance LLC acts in accordance with other national and international data protection laws such as the California Consumer Privacy Act (CCPA) and the European Union General Data Protection Regulation (GDPR). These laws transparently regulate how we process and protect users' personal data."
+            }
+          },
+          {
+            "type": "paragraph",
+            "text": {
+              "tr": "Kişisel Verilerin İşlenmesi ve Korunması İlke ve Prensipleri",
+              "en": "Principles of Processing and Protecting Personal Data"
+            }
+          },
+          {
+            "type": "list",
+            "items": [
+              {
+                "tr": "Kişisel veriler hukuka ve dürüstlük kurallarına uygun işlenir.",
+                "en": "Personal data is processed lawfully and fairly."
+              },
+              {
+                "tr": "Kişisel veriler doğru ve güncel tutulur.",
+                "en": "Personal data is kept accurate and up-to-date."
+              },
+              {
+                "tr": "Kişisel veriler belirli, açık ve meşru amaçlar için işlenir.",
+                "en": "Personal data is processed for specified, explicit, and legitimate purposes."
+              },
+              {
+                "tr": "Kişisel veriler işlendikleri amaçla bağlantılı, sınırlı ve ölçülü olarak işlenir.",
+                "en": "Personal data is processed in a way that is relevant, limited, and proportionate to the purposes for which they are processed."
+              },
+              {
+                "tr": "Kişisel veriler, ilgili mevzuatta öngörülen veya işlendikleri amaç için gerekli olan süre kadar muhafaza edilir.",
+                "en": "Personal data is retained for the period stipulated by relevant legislation or necessary for the purpose for which they are processed."
+              },
+              {
+                "tr": "Kişisel veri sahipleri aydınlatılır ve bilgilendirilir.",
+                "en": "Data subjects are informed and notified."
+              },
+              {
+                "tr": "Kişisel veri sahiplerinin haklarını kullanması için gerekli sistemler kurulur.",
+                "en": "Necessary systems are established for data subjects to exercise their rights."
+              },
+              {
+                "tr": "Kişisel verilerin muhafazası için gerekli tedbirler alınır.",
+                "en": "Necessary measures are taken for the security of personal data."
+              },
+              {
+                "tr": "Kişisel verilerin üçüncü kişilere aktarılmasında ilgili mevzuata ve KVK Kurulu düzenlemelerine uyulur.",
+                "en": "Compliance with relevant legislation and regulations of the Data Protection Board is ensured when transferring personal data to third parties."
+              },
+              {
+                "tr": "Özel nitelikli kişisel verilerin işlenmesine ve korunmasına gereken hassasiyet gösterilir.",
+                "en": "Due sensitivity is shown to the processing and protection of sensitive personal data."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "data-controller",
+        "title": {
+          "tr": "Madde 3: Veri Sorumlusu",
+          "en": "Article 3: Data Controller"
+        },
+        "content": [
+          {
+            "type": "paragraph",
+            "text": {
+              "tr": "Kişisel verileriniz, veri sorumlusu sıfatıyla Inn Elegance LLC tarafından işlenebilir. Veri sorumlusu, kişisel verilerin işleme amaçlarını ve vasıtalarını belirleyen, veri kayıt sisteminin kurulmasında ve yönetilmesinden sorumlu gerçek veya tüzel kişidir.",
+              "en": "Your personal data may be processed by Inn Elegance LLC as the data controller. The data controller is the natural or legal person who determines the purposes and means of processing personal data and is responsible for establishing and managing the data filing system."
+            }
+          }
+        ]
+      },
+      {
+        "id": "privacy-terms",
+        "title": {
+          "tr": "Madde 4: Gizlilik Şartları",
+          "en": "Article 4: Privacy Terms"
+        },
+        "content": [
+          {
+            "type": "paragraph",
+            "text": {
+              "tr": "www.innelegance.com, işbu Gizlilik Politikası ve Kullanım Sözleşmesi'nde tanımlı olan haller haricinde kişisel bilgileri herhangi bir şirket veya üçüncü kişilere açıklamayacaktır. www.innelegance.com, ziyaretçilerin, kayıtlı kullanıcıların ve ortakların kişisel bilgilerini üçüncü şahıslara satmaz.",
+              "en": "www.innelegance.com will not disclose personal information to any company or third parties except in the cases defined in this Privacy Policy and User Agreement. www.innelegance.com does not sell the personal information of visitors, registered users, and partners to third parties."
+            }
+          },
+          {
+            "type": "subpoint",
+            "title": {
+              "tr": "Doğrudan Tarafımıza Sunulan Veriler",
+              "en": "Data Provided Directly to Us"
+            },
+            "text": {
+              "tr": "Rezervasyon formu, iletişim formu ve diğer formlar aracılığıyla bizlere sunulan bilgiler ticari amaçlarla üçüncü şahıslarla paylaşılmaz.",
+              "en": "Information provided to us through the reservation form, contact form, and other forms is not shared with third parties for commercial purposes."
+            }
+          },
+          {
+            "type": "subpoint",
+            "title": {
+              "tr": "Dolaylı Olarak Tarafınızdan Elde Edilen Veriler",
+              "en": "Data Obtained Indirectly from You"
+            },
+            "text": {
+              "tr": "IP bilgisi, konum verileri, çerezler ve diğer kullanım verileri sadece www.innelegance.com sitesine özeldir ve ticari amaçla kullanılmaz.",
+              "en": "IP information, location data, cookies, and other usage data are exclusive to the www.innelegance.com site and are not used for commercial purposes."
+            }
+          }
+        ]
+      },
+      {
+        "id": "reservation-id",
+        "title": {
+          "tr": "Madde 5: Rezervasyon ve Kimlik Sunumları",
+          "en": "Article 5: Reservation and ID Submissions"
+        },
+        "content": [
+          {
+            "type": "paragraph",
+            "text": {
+              "tr": "Firmamız, yasal gereklilikler doğrultusunda villalarda konaklayacak olan her müşterisi için ilgili güvenlik güçlerine kimlik veri bildirimi yapar. Bu nedenle, rezervasyon yapan tüm kullanıcılar bu veri bildirimi için kimliklerini beyan ederler. Beyan edilen kimlik verileri sadece ilgili güvenlik güçlerine sunulur.",
+              "en": "Our company reports identity data to the relevant security forces for every customer staying in the villas, in line with legal requirements. Therefore, all users making a reservation declare their identity for this data notification. The declared identity data is only submitted to the relevant security forces."
+            }
+          }
+        ]
+      },
+      {
+        "id": "acceptance-authority",
+        "title": {
+          "tr": "Madde 6: Kabul Edilen Şartlar ve Yetki",
+          "en": "Article 6: Accepted Terms and Authority"
+        },
+        "content": [
+          {
+            "type": "paragraph",
+            "text": {
+              "tr": "Inn Elegance LLC'den herhangi bir konaklama yapan müşteriler, yukarıda belirtilen şartları kabul etmiş sayılırlar. Bu şartlara aykırı davranışlar, Inn Elegance LLC tarafından rezervasyonları tek taraflı iptal etme ve geri ödeme yapmama hakkını beraberinde getirir.",
+              "en": "Customers making any accommodation reservation from Inn Elegance LLC are deemed to have accepted the terms stated above. Behavior contrary to these terms entitles Inn Elegance LLC to unilaterally cancel reservations and withhold refunds."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  

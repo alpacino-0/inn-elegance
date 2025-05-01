@@ -5,9 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, Building2, Info, Mail, Home, LogIn, UserPlus, UserCircle, Settings, LogOut, ShieldAlert } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { MapIcon } from 'lucide-react';
-import { User } from '@supabase/supabase-js';
-import { UserProfile } from '@/types/user';
+import { SparklesIcon } from 'lucide-react';
+import type { User } from '@supabase/supabase-js';
+import type { UserProfile } from '@/types/user';
 import LoginStatus from '@/components/auth/LoginStatus';
 import { signOutAction } from '@/app/actions';
 import {
@@ -37,7 +37,7 @@ const Header = ({ user, userProfile }: HeaderProps) => {
   const menuItems = [
     { id: 'home', text: 'Ana Sayfa', href: '/', icon: Home, active: pathname === "/" || pathname === "" },
     { id: 'villas', text: 'Villalar', href: '/villa-kiralama', icon: Building2, active: pathname?.includes('/villa-kiralama') },
-    { id: 'regions', text: 'Bölgeler', href: '/bolgeler', icon: MapIcon, active: pathname?.includes('/bolgeler') },
+    { id: 'services', text: 'hizmetler', href: '/villa-kiralama-hizmetler', icon: SparklesIcon, active: pathname?.includes('/villa-kiralama-hizmetler') },
     { id: 'about', text: 'Hakkımızda', href: '/villa-kiralama-hakkimizda', icon: Info, active: pathname?.includes('/villa-kiralama-hakkimizda') },
     { id: 'contact', text: 'İletişim', href: '/villa-kiralama-iletisim', icon: Mail, active: pathname?.includes('/villa-kiralama-iletisim') },
   ];
@@ -344,6 +344,7 @@ const Header = ({ user, userProfile }: HeaderProps) => {
                       )}
                       
                       <button
+                        type="button"
                         onClick={async () => {
                           setIsSheetOpen(false);
                           await signOutAction();
