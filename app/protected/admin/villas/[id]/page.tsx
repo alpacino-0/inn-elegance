@@ -7,6 +7,7 @@ import VillaAmenitiesManager from '@/app/protected/admin/_components/VillaAmenit
 import { VillaSeasonalPrices } from '@/app/protected/admin/_components/VillaSeasonalPrices';
 import { VillaTagsSelector } from '@/app/protected/admin/_components/VillaTagsSelector';
 import VillaAITab from '@/app/protected/admin/_components/VillaAITab';
+import VillaImageUploader from '@/app/protected/admin/_components/VillaImageUploader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CalendarManager from '@/app/protected/admin/_components/CalendarManager';
 
@@ -51,6 +52,7 @@ export default function VillaDetailPage({ params }: VillaDetailPageProps) {
       <Tabs defaultValue="details" className="space-y-6">
         <TabsList>
           <TabsTrigger value="details">Villa Detayı</TabsTrigger>
+          <TabsTrigger value="images">Fotoğraflar</TabsTrigger>
           <TabsTrigger value="tags">Etiketler</TabsTrigger>
           <TabsTrigger value="amenities">Olanaklar</TabsTrigger>
           <TabsTrigger value="prices">Sezonsal Fiyatlar</TabsTrigger>
@@ -60,6 +62,16 @@ export default function VillaDetailPage({ params }: VillaDetailPageProps) {
         
         <TabsContent value="details">
           <VillaDetail villaId={villaId} />
+        </TabsContent>
+        
+        <TabsContent value="images">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-6">Villa Fotoğrafları</h2>
+            <VillaImageUploader 
+              villaId={villaId} 
+              onChange={(images) => console.log("Yüklenen fotoğraflar:", images)} 
+            />
+          </div>
         </TabsContent>
         
         <TabsContent value="tags">
