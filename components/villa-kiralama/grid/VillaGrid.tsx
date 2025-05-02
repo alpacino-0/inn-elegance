@@ -23,6 +23,20 @@ interface VillaGridProps {
   layout?: 'grid' | 'horizontal' | 'list';
 }
 
+// Fotoğraf sıralama yardımcı fonksiyonu
+const sortVillaImages = (images: Array<{ imageUrl: string; isCoverImage?: boolean; order?: number }>) => {
+  if (!Array.isArray(images) || images.length <= 1) return images;
+  
+  return [...images].sort((a, b) => {
+    // Kapak fotoğrafı her zaman önce gelir
+    if (a.isCoverImage && !b.isCoverImage) return -1;
+    if (!a.isCoverImage && b.isCoverImage) return 1;
+    
+    // Her ikisi de kapak veya kapak değilse, order'a göre sırala
+    return (a.order || 0) - (b.order || 0);
+  });
+};
+
 export function VillaGrid({
   villas,
   loading,
@@ -64,8 +78,11 @@ export function VillaGrid({
 
   // VillaImage bileşene gönderilecek formatta işle
   const prepareVillaForCard = (villa: ExtendedVilla): Villa => {
-    // images bilgisinden imageUrl'leri çıkart
-    const villaImages = villa.images?.map(img => img.imageUrl) || [];
+    // Görselleri sırala ve isCoverImage/order'e göre düzenle
+    const sortedImages = villa.images ? sortVillaImages(villa.images) : [];
+    
+    // Sıralanmış görsellerin URL'lerini al
+    const villaImages = sortedImages.map(img => img.imageUrl);
     
     // Villa verisi ve villaImages'ı birleştir
     return {
@@ -141,7 +158,9 @@ export function VillaGrid({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {villas.map(villa => {
             const preparedVilla = prepareVillaForCard(villa);
-            const villaImages = villa.images?.map(img => img.imageUrl) || [];
+            // Görselleri sırala ve isCoverImage/order'e göre düzenle
+            const sortedImages = villa.images ? sortVillaImages(villa.images) : [];
+            const villaImages = sortedImages.map(img => img.imageUrl);
             
             return (
               <VillaCard
@@ -160,7 +179,9 @@ export function VillaGrid({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {villas.map(villa => {
             const preparedVilla = prepareVillaForCard(villa);
-            const villaImages = villa.images?.map(img => img.imageUrl) || [];
+            // Görselleri sırala ve isCoverImage/order'e göre düzenle
+            const sortedImages = villa.images ? sortVillaImages(villa.images) : [];
+            const villaImages = sortedImages.map(img => img.imageUrl);
             
             return (
               <div key={villa.id} className="transition-transform duration-300 hover:-translate-y-1">
@@ -180,8 +201,12 @@ export function VillaGrid({
       {!loading && villas.length > 0 && viewType === 'list' && layout !== 'horizontal' && (
         <div className="space-y-4 sm:space-y-6">
           {villas.map(villa => {
-            // Resim URL'lerini çıkart
-            const imageUrls = villa.images?.map(img => img.imageUrl) || [];
+            // Görselleri sırala ve isCoverImage/order'e göre düzenle
+            const sortedImages = villa.images ? sortVillaImages(villa.images) : [];
+            
+            // Sıralanmış görsellerin URL'lerini al
+            const imageUrls = sortedImages.map(img => img.imageUrl);
+            
             // İlk resim URL'sini al veya boş string kullan
             const firstImageUrl = imageUrls.length > 0 ? imageUrls[0] : '';
             

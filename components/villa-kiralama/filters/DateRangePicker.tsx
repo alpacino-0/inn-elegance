@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
@@ -33,10 +33,31 @@ export function DateRangePicker({
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [buttonWidth, setButtonWidth] = useState(0);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [calendarDays, setCalendarDays] = useState<Date[]>([]);
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(today));
   const [dateSelectionState, setDateSelectionState] = useState<"start" | "end">("start");
+  
+  // Button genişliğini izle
+  useEffect(() => {
+    if (buttonRef.current) {
+      const updateWidth = () => {
+        if (buttonRef.current) {
+          setButtonWidth(buttonRef.current.offsetWidth);
+        }
+      };
+      
+      // İlk render'da ve resize olduğunda genişliği güncelle
+      updateWidth();
+      window.addEventListener('resize', updateWidth);
+      
+      return () => {
+        window.removeEventListener('resize', updateWidth);
+      };
+    }
+  }, []);
   
   // Villa için müsait tarihleri getir
   const { calendarEvents, isLoading, isDateAvailable } = useDateRange(villaId);
@@ -46,23 +67,17 @@ export function DateRangePicker({
     ? Math.max(Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)), 1)
     : 0;
   
-  // Takvim günlerini oluştur
+  // Takvim günlerini oluştur - sadece tek ay için
   useEffect(() => {
     const days: Date[] = [];
     
-    // İki ay için günleri oluştur
-    const firstMonth = currentMonth;
-    const secondMonth = addMonths(currentMonth, 1);
+    // Sadece mevcut ay için günleri oluştur
+    const month = currentMonth;
     
-    const generateDaysForMonth = (month: Date) => {
-      const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
-      for (let i = 1; i <= daysInMonth; i++) {
-        days.push(new Date(month.getFullYear(), month.getMonth(), i));
-      }
-    };
-    
-    generateDaysForMonth(firstMonth);
-    generateDaysForMonth(secondMonth);
+    const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(new Date(month.getFullYear(), month.getMonth(), i));
+    }
     
     setCalendarDays(days);
   }, [currentMonth]);
@@ -76,14 +91,14 @@ export function DateRangePicker({
     }
   }, [startDate, endDate]);
   
-  // Önceki aylara geç
-  const goToPreviousMonths = () => {
+  // Önceki aya geç
+  const goToPreviousMonth = () => {
     if (isBefore(addMonths(currentMonth, -1), startOfMonth(today))) return;
     setCurrentMonth(addMonths(currentMonth, -1));
   };
   
-  // Sonraki aylara geç
-  const goToNextMonths = () => {
+  // Sonraki aya geç
+  const goToNextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
   };
   
@@ -165,82 +180,55 @@ export function DateRangePicker({
   
   // Takvimi oluştur
   const renderCalendar = () => {
-    // Ay gruplarını oluştur
-    const months: { [key: string]: Date[] } = {};
+    // Hafta günlerini hesapla
+    const weekDays = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
     
-    for (const day of calendarDays) {
-      const monthKey = format(day, 'yyyy-MM');
-      if (!months[monthKey]) {
-        months[monthKey] = [];
-      }
-      months[monthKey].push(day);
-    }
-    
-    const monthKeys = Object.keys(months).sort();
+    // Ayın ilk gününün haftanın hangi günü olduğunu hesapla (0: Pazar, 1: Pazartesi, ...)
+    let firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+    firstDayOfMonth = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Pazartesi'yi 0 yap
     
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {monthKeys.map((monthKey) => {
-          const days = months[monthKey];
-          if (days.length === 0) return null;
-          
-          const firstDay = days[0];
-          const monthName = formatMonth(firstDay);
-          
-          // Hafta günlerini hesapla
-          const weekDays = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
-          
-          // Ayın ilk gününün haftanın hangi günü olduğunu hesapla (0: Pazar, 1: Pazartesi, ...)
-          let firstDayOfMonth = new Date(firstDay.getFullYear(), firstDay.getMonth(), 1).getDay();
-          firstDayOfMonth = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1; // Pazartesi'yi 0 yap
-          
-          return (
-            <div key={monthKey} className="w-full">
-              <div className="font-medium text-center mb-2">{monthName}</div>
-              
-              <div className="grid grid-cols-7 gap-1 mb-1">
-                {weekDays.map(day => (
-                  <div key={day} className="text-xs text-center text-muted-foreground">
-                    {day}
-                  </div>
-                ))}
-              </div>
-              
-              <div className="grid grid-cols-7 gap-1">
-                {/* Boş günler için dolgu */}
-                {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-                  <div key={`empty-${index}-${monthKey}`} className="p-2" />
-                ))}
-                
-                {/* Ayın günleri */}
-                {days.map(day => {
-                  const isSelectable = isDateSelectable(day);
-                  const isSelected = isDateSelected(day);
-                  const isStartDate = startDate && isEqual(day, startDate);
-                  const isEndDate = endDate && isEqual(day, endDate);
-                  
-                  return (
-                    <button 
-                      type="button"
-                      key={day.toISOString()}
-                      onClick={() => handleDateClick(day)}
-                      disabled={!isSelectable}
-                      className={cn(
-                        "p-2 text-sm rounded-md text-center",
-                        isSelectable ? "hover:bg-muted" : "opacity-50 cursor-not-allowed",
-                        isSelected && "bg-primary/20 text-primary",
-                        isStartDate && "bg-primary text-primary-foreground rounded-l-md",
-                        isEndDate && "bg-primary text-primary-foreground rounded-r-md"
-                      )}
-                    >
-                      {formatDateDay(day)}
-                    </button>
-                  );
-                })}
-              </div>
+      <div className="w-full">
+        <div className="grid grid-cols-7 gap-1 mb-1">
+          {weekDays.map(day => (
+            <div key={day} className="text-xs text-center text-muted-foreground px-1">
+              {day}
             </div>
-          );
-        })}
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-7 gap-1">
+          {/* Boş günler için dolgu */}
+          {Array.from({ length: firstDayOfMonth }).map((_, index) => (
+            <div key={`empty-day-${currentMonth.getFullYear()}-${currentMonth.getMonth()}-${index}`} className="p-1 sm:p-2" />
+          ))}
+          
+          {/* Ayın günleri */}
+          {calendarDays.map(day => {
+            const isSelectable = isDateSelectable(day);
+            const isSelected = isDateSelected(day);
+            const isStartDate = startDate && isEqual(day, startDate);
+            const isEndDate = endDate && isEqual(day, endDate);
+            
+            return (
+              <button 
+                type="button"
+                key={day.toISOString()}
+                onClick={() => handleDateClick(day)}
+                disabled={!isSelectable}
+                className={cn(
+                  "p-1 sm:p-2 text-xs sm:text-sm rounded-md text-center",
+                  isSelectable ? "hover:bg-muted" : "opacity-50 cursor-not-allowed",
+                  isSelected && "bg-primary/20 text-primary",
+                  isStartDate && "bg-primary text-primary-foreground rounded-l-md",
+                  isEndDate && "bg-primary text-primary-foreground rounded-r-md"
+                )}
+              >
+                {formatDateDay(day)}
+              </button>
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -257,6 +245,7 @@ export function DateRangePicker({
       <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
         <PopoverTrigger asChild>
           <Button
+            ref={buttonRef}
             variant="outline"
             size={size === "lg" ? "lg" : size === "sm" ? "sm" : "default"}
             className={cn(
@@ -279,34 +268,39 @@ export function DateRangePicker({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-4" align="start">
+        <PopoverContent 
+          className="p-4" 
+          align="start" 
+          sideOffset={4}
+          style={{ width: buttonWidth > 0 ? `${buttonWidth}px` : 'auto' }}
+        >
           <div className="space-y-4">     
             <div className="flex justify-between items-center">
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={goToPreviousMonths}
+                onClick={goToPreviousMonth}
                 disabled={isBefore(addMonths(currentMonth, -1), startOfMonth(today))}
                 className="h-7 w-7"
-                aria-label="Önceki aylar"
+                aria-label="Önceki ay"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                  <title>Önceki aylar</title>
+                  <title>Önceki ay</title>
                   <path d="m15 18-6-6 6-6" />
                 </svg>
               </Button>
               <div className="font-medium text-center">
-                {format(currentMonth, 'MMMM yyyy', { locale: tr })} - {format(addMonths(currentMonth, 1), 'MMMM yyyy', { locale: tr })}
+                {formatMonth(currentMonth)}
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={goToNextMonths}
+                onClick={goToNextMonth}
                 className="h-7 w-7"
-                aria-label="Sonraki aylar"
+                aria-label="Sonraki ay"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                  <title>Sonraki aylar</title>
+                  <title>Sonraki ay</title>
                   <path d="m9 18 6-6-6-6" />
                 </svg>
               </Button>

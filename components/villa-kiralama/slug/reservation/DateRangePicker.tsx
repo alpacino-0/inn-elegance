@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Loader2 } from "lucide-react";
@@ -45,9 +45,30 @@ export default function DateRangePicker({
   disabled = false,
   villaId
 }: DateRangePickerProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [buttonWidth, setButtonWidth] = useState(0);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [calendarDays, setCalendarDays] = useState<Date[]>([]);
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(today));
+  
+  // Button genişliğini izle
+  useEffect(() => {
+    if (buttonRef.current) {
+      const updateWidth = () => {
+        if (buttonRef.current) {
+          setButtonWidth(buttonRef.current.offsetWidth);
+        }
+      };
+      
+      // İlk render'da ve resize olduğunda genişliği güncelle
+      updateWidth();
+      window.addEventListener('resize', updateWidth);
+      
+      return () => {
+        window.removeEventListener('resize', updateWidth);
+      };
+    }
+  }, []);
   
   // useDateRange hook'unu kullan
   const { calendarEvents, isLoading } = useDateRange(villaId);
@@ -297,6 +318,7 @@ export default function DateRangePicker({
       <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
         <PopoverTrigger asChild>
           <Button
+            ref={buttonRef}
             variant="outline"
             size={size === "lg" ? "lg" : size === "sm" ? "sm" : "default"}
             className={cn(
@@ -319,7 +341,12 @@ export default function DateRangePicker({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-4 max-w-[90vw] sm:max-w-none" align="start">
+        <PopoverContent 
+          className="p-4" 
+          align="start" 
+          sideOffset={4}
+          style={{ width: buttonWidth > 0 ? `${buttonWidth}px` : 'auto' }}
+        >
           <div className="space-y-4">                 
             <div className="flex justify-between items-center">
               <Button 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
+//import SearchBar from "../searchbar/SearchBar";
 
 // HeroSection props tipini tanımlayalım
 interface HeroSectionProps {
@@ -73,7 +73,7 @@ const HeroSection = ({
           <p className="mb-6 sm:mb-8 text-base sm:text-lg md:text-xl text-white drop-shadow-md">{subtitle}</p>
           
           {/* Arama çubuğu */}
-         {/*<div className="mx-auto w-full max-w-3xl rounded-lg bg-white/10 p-4 backdrop-blur-md">
+          {/* <div className="mx-auto w-full max-w-3xl rounded-lg bg-white/10 p-4 backdrop-blur-md">
             <SearchBar />
           </div> */}
           
