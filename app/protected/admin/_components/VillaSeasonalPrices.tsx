@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useVillaSeasonalPrices, useCurrencies, useCreateSeasonalPrice, useUpdateSeasonalPrice, useDeleteSeasonalPrice } from '@/hooks/use-seasonal-price-queries';
 import type { CreateSeasonalPriceDto, UpdateSeasonalPriceDto, SeasonalPrice } from '@/types/seasonal-price';
@@ -80,9 +80,26 @@ function AddSeasonalPriceForm({ villaId }: { villaId: string }) {
     description: '',
     isActive: true
   });
+  
+  const [useCustomWeeklyPrice, setUseCustomWeeklyPrice] = useState(false);
+
+  // Gecelik fiyat değiştiğinde haftalık fiyatı otomatik hesapla
+  useEffect(() => {
+    if (!useCustomWeeklyPrice && formData.nightlyPrice) {
+      // Haftalık fiyat = Gecelik fiyat * 7
+      const calculatedWeeklyPrice = formData.nightlyPrice * 7;
+      setFormData(prev => ({ ...prev, weeklyPrice: calculatedWeeklyPrice }));
+    }
+  }, [formData.nightlyPrice, useCustomWeeklyPrice]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+    
+    // Haftalık fiyat manuel değiştirildiğinde
+    if (name === 'weeklyPrice' && !useCustomWeeklyPrice) {
+      setUseCustomWeeklyPrice(true);
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'number' ? (value ? Number.parseFloat(value) : 0) : value
@@ -95,6 +112,15 @@ function AddSeasonalPriceForm({ villaId }: { villaId: string }) {
 
   const handleCheckboxChange = (name: string, checked: boolean) => {
     setFormData(prev => ({ ...prev, [name]: checked }));
+  };
+  
+  // Haftalık fiyatı sıfırla ve otomatik hesaplamayı etkinleştir
+  const resetWeeklyPrice = () => {
+    setUseCustomWeeklyPrice(false);
+    const nightlyPrice = formData.nightlyPrice || 0;
+    if (nightlyPrice > 0) {
+      setFormData(prev => ({ ...prev, weeklyPrice: nightlyPrice * 7 }));
+    }
   };
 
   const handleSubmit = (e?: React.FormEvent) => {
@@ -132,6 +158,7 @@ function AddSeasonalPriceForm({ villaId }: { villaId: string }) {
           description: '',
           isActive: true
         });
+        setUseCustomWeeklyPrice(false);
       },
       onError: (error) => {
         toast.error(`Hata: ${error?.message || 'Sezon fiyatı eklenirken bir hata oluştu'}`);
@@ -224,7 +251,24 @@ function AddSeasonalPriceForm({ villaId }: { villaId: string }) {
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="weeklyPrice">Haftalık Fiyat</Label>
+          <div className="flex justify-between items-center">
+            <Label htmlFor="weeklyPrice">
+              Haftalık Fiyat {useCustomWeeklyPrice ? 
+              <span className="text-xs font-normal text-muted-foreground">(Manuel)</span> : 
+              <span className="text-xs font-normal text-muted-foreground">(Otomatik: 7 gece)</span>}
+            </Label>
+            {useCustomWeeklyPrice && (
+              <Button 
+                type="button" 
+                variant="ghost" 
+                size="sm" 
+                onClick={resetWeeklyPrice}
+                className="h-6 px-2 text-xs"
+              >
+                Otomatiğe Dön
+              </Button>
+            )}
+          </div>
           <Input 
             id="weeklyPrice"
             name="weeklyPrice"
@@ -233,7 +277,6 @@ function AddSeasonalPriceForm({ villaId }: { villaId: string }) {
             step="0.01"
             value={formData.weeklyPrice || ''}
             onChange={handleChange}
-            placeholder="Opsiyonel"
           />
         </div>
         
@@ -289,6 +332,26 @@ function SeasonalPriceItem({ price, villaId }: { price: SeasonalPrice; villaId: 
     isActive: price.isActive
   });
   
+  const [useCustomWeeklyPrice, setUseCustomWeeklyPrice] = useState(true);
+  
+  // İlk yükleme durumunda, eğer haftalık fiyat tam olarak gecelik fiyat * 7 ise, otomatik modu aktifleştir
+  useEffect(() => {
+    if (isEditing && formData.weeklyPrice !== null && formData.nightlyPrice !== undefined && formData.nightlyPrice > 0) {
+      const calculatedWeekly = formData.nightlyPrice * 7;
+      // Ondalık hassasiyetten dolayı tam eşitlik kontrolü yerine yakın değer kontrolü
+      const isAutoCalculated = Math.abs((formData.weeklyPrice || 0) - calculatedWeekly) < 0.01;
+      setUseCustomWeeklyPrice(!isAutoCalculated);
+    }
+  }, [isEditing, formData.weeklyPrice, formData.nightlyPrice]);
+  
+  // Gecelik fiyat değiştiğinde haftalık fiyatı otomatik hesapla
+  useEffect(() => {
+    if (isEditing && !useCustomWeeklyPrice && formData.nightlyPrice !== undefined && formData.nightlyPrice > 0) {
+      const calculatedWeeklyPrice = formData.nightlyPrice * 7;
+      setFormData(prev => ({ ...prev, weeklyPrice: calculatedWeeklyPrice }));
+    }
+  }, [formData.nightlyPrice, useCustomWeeklyPrice, isEditing]);
+  
   const { data: currenciesData, isLoading: isLoadingCurrencies } = useCurrencies();
   // Extra güvenlik - array testi
   const currencies = Array.isArray(currenciesData) ? currenciesData : [];
@@ -298,6 +361,12 @@ function SeasonalPriceItem({ price, villaId }: { price: SeasonalPrice; villaId: 
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+    
+    // Haftalık fiyat manuel değiştirildiğinde
+    if (name === 'weeklyPrice' && !useCustomWeeklyPrice) {
+      setUseCustomWeeklyPrice(true);
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'number' ? (value ? Number.parseFloat(value) : 0) : value
@@ -310,6 +379,15 @@ function SeasonalPriceItem({ price, villaId }: { price: SeasonalPrice; villaId: 
 
   const handleCheckboxChange = (name: string, checked: boolean) => {
     setFormData(prev => ({ ...prev, [name]: checked }));
+  };
+  
+  // Haftalık fiyatı sıfırla ve otomatik hesaplamayı etkinleştir
+  const resetWeeklyPrice = () => {
+    setUseCustomWeeklyPrice(false);
+    const nightlyPrice = formData.nightlyPrice || 0;
+    if (nightlyPrice > 0) {
+      setFormData(prev => ({ ...prev, weeklyPrice: nightlyPrice * 7 }));
+    }
   };
 
   const handleUpdate = (e?: React.FormEvent) => {
@@ -490,7 +568,24 @@ function SeasonalPriceItem({ price, villaId }: { price: SeasonalPrice; villaId: 
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor={`weeklyPrice-${price.id}`}>Haftalık Fiyat</Label>
+          <div className="flex justify-between items-center">
+            <Label htmlFor={`weeklyPrice-${price.id}`}>
+              Haftalık Fiyat {useCustomWeeklyPrice ? 
+              <span className="text-xs font-normal text-muted-foreground">(Manuel)</span> : 
+              <span className="text-xs font-normal text-muted-foreground">(Otomatik: 7 gece)</span>}
+            </Label>
+            {useCustomWeeklyPrice && (
+              <Button 
+                type="button" 
+                variant="ghost" 
+                size="sm" 
+                onClick={resetWeeklyPrice}
+                className="h-6 px-2 text-xs"
+              >
+                Otomatiğe Dön
+              </Button>
+            )}
+          </div>
           <Input 
             id={`weeklyPrice-${price.id}`}
             name="weeklyPrice"

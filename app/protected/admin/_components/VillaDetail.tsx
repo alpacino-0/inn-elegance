@@ -72,7 +72,7 @@ export default function VillaDetail({ villaId }: VillaDetailProps) {
             size="sm"
             asChild
           >
-            <Link href={`/villa/${villa.slug}`} target="_blank">
+            <Link href={`/villa-kiralama/${villa.slug}`} target="_blank">
               Önizleme
             </Link>
           </Button>

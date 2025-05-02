@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { TouchEvent } from 'react';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,11 @@ export default function FullScreenGallery({
   initialIndex = 0,
   onClose 
 }: FullScreenGalleryProps) {
+  // Resimleri "order" alanına göre sırala
+  const sortedImages = useMemo(() => {
+    return [...images].sort((a, b) => a.order - b.order);
+  }, [images]);
+
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -41,13 +46,13 @@ export default function FullScreenGallery({
   // Görsel navigasyonu - useCallback ile memoize edilmiş fonksiyonlar
   const nextImage = useCallback(() => {
     setLoadingImage(true);
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-  }, [images.length]);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % sortedImages.length);
+  }, [sortedImages.length]);
 
   const prevImage = useCallback(() => {
     setLoadingImage(true);
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-  }, [images.length]);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + sortedImages.length) % sortedImages.length);
+  }, [sortedImages.length]);
 
   // Klavye olayları
   useEffect(() => {
@@ -106,7 +111,7 @@ export default function FullScreenGallery({
   };
 
   // Mevcut görsel
-  const currentImage = images[currentIndex];
+  const currentImage = sortedImages[currentIndex];
   const imageUrl = currentImage?.imageUrl || placeholderImage;
   const imageAlt = currentImage?.title || currentImage?.altText || `Villa Görseli ${currentIndex + 1}`;
 
@@ -130,7 +135,7 @@ export default function FullScreenGallery({
         {/* Üst Bar */}
         <div className="flex items-center justify-between p-4">
           <span className="text-white text-sm">
-            {currentIndex + 1} / {images.length}
+            {currentIndex + 1} / {sortedImages.length}
           </span>
           <Button 
             variant="ghost" 

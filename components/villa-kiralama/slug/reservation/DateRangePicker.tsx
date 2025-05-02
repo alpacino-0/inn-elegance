@@ -50,7 +50,7 @@ export default function DateRangePicker({
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(today));
   
   // useDateRange hook'unu kullan
-  const { calendarEvents, isLoading, isDateAvailable } = useDateRange(villaId);
+  const { calendarEvents, isLoading } = useDateRange(villaId);
   
   // CalendarEvent[] formatından iç CalendarDay[] formatına dönüştür
   const calendarData: CalendarDay[] = useMemo(() => {
@@ -58,6 +58,7 @@ export default function DateRangePicker({
     
     return calendarEvents.map((event: CalendarEvent) => ({
       date: new Date(event.date),
+      // Status AVAILABLE olan günler (CHECKIN ve CHECKOUT dahil) seçilebilir olsun
       status: event.status === CalendarStatus.AVAILABLE ? 'available' : 'booked',
       price: event.price || undefined,
       eventType: event.eventType
@@ -73,9 +74,8 @@ export default function DateRangePicker({
   useEffect(() => {
     const days: Date[] = [];
     
-    // İki ay için günleri oluştur
-    const firstMonth = currentMonth;
-    const secondMonth = addMonths(currentMonth, 1);
+    // Sadece bir ay için günleri oluştur
+    const month = currentMonth;
     
     const generateDaysForMonth = (month: Date) => {
       const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
@@ -84,20 +84,19 @@ export default function DateRangePicker({
       }
     };
     
-    generateDaysForMonth(firstMonth);
-    generateDaysForMonth(secondMonth);
+    generateDaysForMonth(month);
     
     setCalendarDays(days);
   }, [currentMonth]);
   
-  // Önceki aylara geç
-  const goToPreviousMonths = () => {
+  // Önceki aya geç
+  const goToPreviousMonth = () => {
     if (isBefore(addMonths(currentMonth, -1), startOfMonth(today))) return;
     setCurrentMonth(addMonths(currentMonth, -1));
   };
   
-  // Sonraki aylara geç
-  const goToNextMonths = () => {
+  // Sonraki aya geç
+  const goToNextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
   };
   
@@ -106,8 +105,16 @@ export default function DateRangePicker({
     // Bugünden önce olan tarihleri devre dışı bırak
     if (isBefore(date, today)) return false;
     
-    // useDateRange hook'undan isDateAvailable fonksiyonunu kullan
-    return isDateAvailable(date);
+    // CalendarEvent'i bul
+    const calendarDay = calendarData.find(item => isSameDay(item.date, date));
+    
+    // Eğer tarih veri setinde yoksa veya booked ise seçilemez
+    if (!calendarDay) return false;
+    if (calendarDay.status === 'booked') return false;
+    
+    // Status AVAILABLE olan tüm günleri seçilebilir yap
+    // eventType CHECKIN ve CHECKOUT olsa bile seçilebilir
+    return calendarDay.status === 'available';
   };
   
   // Tarihin seçili olup olmadığını kontrol et
@@ -176,11 +183,6 @@ export default function DateRangePicker({
     return format(date, 'd', { locale: tr });
   };
   
-  // Ay adını formatla
-  const formatMonth = (date: Date) => {
-    return format(date, 'MMMM yyyy', { locale: tr });
-  };
-  
   // Takvimi oluştur
   const renderCalendar = () => {
     // Ay gruplarını oluştur
@@ -197,13 +199,12 @@ export default function DateRangePicker({
     const monthKeys = Object.keys(months).sort();
     
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {monthKeys.map((monthKey) => {
           const days = months[monthKey];
           if (days.length === 0) return null;
           
           const firstDay = days[0];
-          const monthName = formatMonth(firstDay);
           
           // Hafta günlerini hesapla
           const weekDays = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
@@ -214,9 +215,7 @@ export default function DateRangePicker({
           
           return (
             <div key={monthKey} className="w-full">
-              <div className="font-semibold text-base text-center mb-3">{monthName}</div>
-              
-              <div className="grid grid-cols-7 gap-1 mb-1">
+              <div className="grid grid-cols-7 gap-1 mb-2">
                 {weekDays.map(day => (
                   <div key={day} className="text-xs text-center text-muted-foreground">
                     {day}
@@ -293,42 +292,6 @@ export default function DateRangePicker({
     );
   };
   
-  // Takvim lejandını oluştur
-  const renderLegend = () => {
-    return (
-      <div className="flex flex-wrap gap-2 text-xs mt-2">
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-primary/20 border rounded" />
-          <span>Seçili</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-red-50 border rounded" />
-          <span>Dolu</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="relative w-3 h-3 border rounded bg-white overflow-hidden">
-            <div className="absolute right-0 bottom-0 w-full h-full">
-              <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" role="presentation">
-                <polygon points="100,100 2,100 100,2" fill="rgba(254, 242, 242)" />
-              </svg>
-            </div>
-          </div>
-          <span>Giriş</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="relative w-3 h-3 border rounded bg-white overflow-hidden">
-            <div className="absolute left-0 top-0 w-full h-full">
-              <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" role="presentation">
-                <polygon points="0,0 98,0 0,98" fill="rgba(254, 242, 242)" />
-              </svg>
-            </div>
-          </div>
-          <span>Çıkış</span>
-        </div>
-      </div>
-    );
-  };
-  
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
@@ -362,24 +325,27 @@ export default function DateRangePicker({
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={goToPreviousMonths}
+                onClick={goToPreviousMonth}
                 disabled={isBefore(addMonths(currentMonth, -1), startOfMonth(today)) || isLoading}
                 className="h-7 w-7"
-                aria-label="Önceki aylar"
-                title="Önceki aylar"
+                aria-label="Önceki ay"
+                title="Önceki ay"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true" role="presentation">
                   <path d="m15 18-6-6 6-6" />
                 </svg>
               </Button>
+              <div className="font-semibold text-base">
+                {format(currentMonth, 'MMMM yyyy', { locale: tr })}
+              </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={goToNextMonths}
+                onClick={goToNextMonth}
                 disabled={isLoading}
                 className="h-7 w-7"
-                aria-label="Sonraki aylar"
-                title="Sonraki aylar"
+                aria-label="Sonraki ay"
+                title="Sonraki ay"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true" role="presentation">
                   <path d="m9 18 6-6-6-6" />
@@ -398,7 +364,6 @@ export default function DateRangePicker({
             ) : (
               <>
                 {renderCalendar()}
-                {renderLegend()}
     
                 <div className="text-xs text-muted-foreground">
                   *Bu villa için minimum konaklama {minStay} gecedir.

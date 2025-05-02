@@ -340,21 +340,6 @@ export default function ReservationSuccessPage() {
                 }
               </span>
             </div>
-            
-            {reservation.paymentMethod === 'BANK_TRANSFER' && (
-              <Alert className="mt-2 bg-primary/5">
-                <AlertDescription className="text-sm">
-                  <p className="font-medium mb-1">Ödeme Talimatları:</p>
-                  <p>Lütfen aşağıdaki banka hesabına ödemenizi yapın ve rezervasyon kodunuzu açıklama bölümüne ekleyin.</p>
-                  <div className="mt-2 p-2 bg-background rounded border text-xs space-y-1">
-                    <p><span className="font-semibold">Banka:</span> XYZ Bank</p>
-                    <p><span className="font-semibold">Hesap Sahibi:</span> Inn Elegance Villa</p>
-                    <p><span className="font-semibold">IBAN:</span> TR00 0000 0000 0000 0000 0000 00</p>
-                    <p><span className="font-semibold">Açıklama:</span> {reservation.bookingRef}</p>
-                  </div>
-                </AlertDescription>
-              </Alert>
-            )}
           </div>
           
           <Alert className="bg-amber-50 border-amber-200">

@@ -19,6 +19,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import ContactForm from "./ContactForm";
 import { PaymentType } from "@/types/reservation";
 import type { PaymentMethod as ReservationPaymentMethod, ReservationFormData } from "@/types/reservation";
+import { useMinimumSeasonalPrice } from "@/hooks/useMinimumSeasonalPrice";
 
 interface VillaReservationProps {
   villaId: string;
@@ -51,6 +52,9 @@ export default function VillaReservation({
 }: VillaReservationProps) {
   // Depozito
   const depositAmount = deposit || 0;
+  
+  // En düşük sezonsal fiyatı al
+  const { data: minimumPrice, isLoading: isMinimumPriceLoading } = useMinimumSeasonalPrice(villaId);
   
   // Bugünün tarihini al (takvim için)
   const today = new Date();
@@ -296,10 +300,27 @@ export default function VillaReservation({
           <div className="text-lg sm:text-xl md:text-2xl font-semibold flex flex-wrap items-baseline gap-1">
             {priceCalculation?.averagePrice 
               ? Math.round(priceCalculation.averagePrice).toLocaleString('tr-TR') 
-              : nightlyPrice.toLocaleString('tr-TR')
+              : minimumPrice 
+                ? Math.round(minimumPrice).toLocaleString('tr-TR')
+                : nightlyPrice.toLocaleString('tr-TR')
             } ₺
-            <span className="text-xs sm:text-sm md:text-base font-normal text-gray-600"> / gece</span>
+            <span className="text-xs sm:text-sm md:text-base font-normal text-gray-600">
+              {priceCalculation?.averagePrice
+                ? " / gece"
+                : " / geceden başlayan"}
+            </span>
           </div>
+          {!priceCalculation?.averagePrice && !isMinimumPriceLoading && (
+            <div className="text-xs text-muted-foreground">
+              Kesin fiyat için tarih seçin
+            </div>
+          )}
+          {isMinimumPriceLoading && !priceCalculation?.averagePrice && (
+            <div className="text-xs text-muted-foreground flex items-center">
+              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+              Fiyat yükleniyor...
+            </div>
+          )}
         </div>
         
         {/* Tarih Seçimi */}

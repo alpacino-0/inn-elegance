@@ -12,7 +12,6 @@ interface TourService {
   image: string;
   type: TourType;
   features: TourFeature[];
-  price: string;
   duration?: string;
   groupSize?: string;
   location?: string;
@@ -23,39 +22,36 @@ const tourData: TourService[] = [
   {
     id: 1,
     title: "Havalimanı VIP Transfer",
-    description: "Konforlu araçlarla havalimanından otelinize özel transfer hizmeti. Bagaj taşıma ve karşılama dahildir.",
-    image: "https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
+    description: "Lüks araçlarımızla havalimanından villanıza konforlu ve özel transfer hizmeti. Bagaj taşıma ve profesyonel karşılama dahildir.",
+    image: "https://mfaexsxibqfwtpchkppy.supabase.co/storage/v1/object/public/villa-images/Hizmetler/tv-9.jpg",
     type: "Hava Limanı Transfer",
     features: ["Özel Şoför", "Wi-Fi", "İkram"],
-    price: "₺1,500",
-    duration: "30-45 dk",
-    groupSize: "1-4 Kişi",
+    duration: "30-60 dk",
+    groupSize: "1-6 Kişi",
     location: "Tüm Havalimanları",
   },
   {
     id: 2,
-    title: "Mavi Tur Bodrum",
-    description: "Bodrum koylarını keşfedin, kristal sularda yüzün ve teknede öğle yemeğinin tadını çıkarın.",
-    image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?q=80&w=2532&auto=format&fit=crop&ixlib=rb-4.0.3",
+    title: "Özel Tekne Turu",
+    description: "Eşsiz koyları keşfedin, masmavi sularda yüzün ve teknede muhteşem deniz manzarası eşliğinde gününüzün tadını çıkarın.",
+    image: "https://mfaexsxibqfwtpchkppy.supabase.co/storage/v1/object/public/villa-images/Hizmetler/woman-standing-nose-yacht-sunny-summer-day-breeze-developing-hair.jpg",
     type: "Tekne Turu",
     features: ["Öğle Yemeği Dahil", "Yüzme Molaları", "Rehber Dahil"],
-    price: "₺850 / kişi",
-    duration: "8 saat",
-    groupSize: "20 Kişiye Kadar",
-    location: "Bodrum",
+    duration: "Tam Gün",
+    groupSize: "Özel Grup",
+    location: "Sahil Bölgeleri",
     startingTime: "10:00"
   },
   {
     id: 3,
-    title: "Dalış Deneyimi Kaş",
-    description: "Deneyimli eğitmenler eşliğinde Akdeniz'in muhteşem sualtı dünyasını keşfedin.",
-    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
+    title: "Dalış Deneyimi",
+    description: "Uzman eğitmenler eşliğinde Akdeniz'in büyüleyici sualtı dünyasını keşfedin. Tüm ekipman ve eğitim programı dahildir.",
+    image: "https://mfaexsxibqfwtpchkppy.supabase.co/storage/v1/object/public/villa-images/Hizmetler/woman-with-flippers-swimming-ocean.jpg",
     type: "Scuba Diving",
     features: ["Ekipman Dahil", "Eğitim", "Sigorta Dahil"],
-    price: "₺1,200 / kişi",
-    duration: "4 saat",
-    groupSize: "8 Kişiye Kadar",
-    location: "Kaş, Antalya",
+    duration: "Yarım Gün",
+    groupSize: "Küçük Gruplar",
+    location: "Dalış Noktaları",
     startingTime: "09:00"
   }
 ];
@@ -79,9 +75,6 @@ export default function Page() {
       </div>
       
       <div className="mt-12 text-center">
-        <p className="text-sm text-[#000000]/60 max-w-2xl mx-auto">
-          * Fiyatlandırma dönemsel olarak değişiklik gösterebilir. Kesin rezervasyon için lütfen iletişime geçiniz.
-        </p>
         <button 
           type="button"
           className="mt-4 py-2 px-6 bg-[#100049] text-white rounded text-sm font-medium hover:bg-[#180675] transition-colors"
@@ -109,10 +102,6 @@ function TourCard({ tour }: { tour: TourService }) {
         <div className="absolute top-3 left-3 z-10 bg-[#180675]/90 backdrop-blur-sm py-1 px-2.5 rounded-full text-white font-medium text-xs shadow-sm flex items-center">
           <TourTypeIcon type={tour.type} className="mr-1.5" />
           {tour.type}
-        </div>
-        
-        <div className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm py-1 px-2.5 rounded-full text-[#100049] font-medium text-xs shadow-sm">
-          {tour.price}
         </div>
         
         <div className="absolute bottom-0 left-0 right-0 p-4 z-10 bg-gradient-to-t from-black/60 via-black/30 to-transparent">
@@ -157,7 +146,6 @@ function TourCard({ tour }: { tour: TourService }) {
               )}
             </div>
           </div>
-          <span className="text-[#100049] font-medium text-xs">{tour.price}</span>
         </div>
         
         <div>
