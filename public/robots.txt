@@ -1,0 +1,22 @@
+# Inn Elegance - robots.txt
+
+# Tüm arama motorları için
+User-agent: *
+Allow: /
+
+# Özel dizinlere erişim kısıtlamaları
+Disallow: /api/
+Disallow: /.next/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /sign-in/
+Disallow: /sign-up/
+Disallow: /forgot-password/
+Disallow: /protected/
+Disallow: /reservation-success/
+
+# Ana site adresi
+Host: https://www.innelegance.com
+
+# Sitemap dosyası
+Sitemap: https://www.innelegance.com/sitemap.xml 

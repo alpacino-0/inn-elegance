@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Inn Elegance - Lüks Villa Kiralama",
   description: "Türkiye'nin en güzel bölgelerinde lüks ve özel villa kiralama hizmetleri sunan Inn Elegance",
+  verification: {
+    google: "Vc_SHpDfEKcmM1nVxIbd_ODzxXlk9QJ0WLovNYah2bE"
+  },
 };
 
 const nunito = Nunito({

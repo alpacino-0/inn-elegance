@@ -12,6 +12,26 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // SEO iyileştirmeleri
+  poweredByHeader: false, // "X-Powered-By" header'ı kaldır
+  
+  // rewrites yerine redirects kullanın (www olmayan adresleri www'ye yönlendirmek için)
+  async redirects() {
+    return [
+      // www olmayan URL'leri www'li versiyona yönlendir
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'innelegance.com',
+          },
+        ],
+        destination: 'https://www.innelegance.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

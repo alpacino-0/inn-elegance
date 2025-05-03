@@ -1,13 +1,10 @@
 // pages/villalar.tsx
 import { Suspense } from 'react';
 import VillaListingContainer from '@/components/villa-kiralama/VillaListingContainer';
-import type { Metadata } from 'next';
+import { metadata } from './metadata'; // Metadata dosyasını içe aktarıyoruz
 
-// Metadata tanımı (dil bağımsız)
-export const metadata: Metadata = {
-  title: 'Villa Kiralama | Tüm Villalar',
-  description: 'Tatil için kiralık villaları keşfedin. Konforlu ve lüks villalarla unutulmaz bir tatil deneyimi yaşayın.',
-};
+// Sayfanın kendi metadata tanımını kaldırıp, içe aktarılan metadata'yı kullanıyoruz
+export { metadata };
 
 // Villa Listeleme Sayfası
 export default function VillaListPage() {
